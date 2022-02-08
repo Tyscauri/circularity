@@ -1,0 +1,280 @@
+// Copyright 2020 IOTA Stiftung
+// SPDX-License-Identifier: Apache-2.0
+
+use wasmlib::*;
+
+use crate::*;
+use crate::structs::*;
+use crate::typedefs::*;
+
+pub fn func_init(ctx: &ScFuncContext, f: &InitContext) {
+    if f.params.owner().exists() {
+        f.state.owner().set_value(&f.params.owner().value());
+        return;
+    }
+    f.state.owner().set_value(&ctx.contract_creator());
+    f.state.share_recycler().set_value(25);
+    f.state.price_per_mg().set_value(2); //assuming 1€ per MIOTA: 2 Iota per miligramm result in 2 cent per 10 gramms of weight
+}
+
+pub fn func_set_owner(ctx: &ScFuncContext, f: &SetOwnerContext) {
+    f.state.owner().set_value(&f.params.owner().value());
+}
+
+pub fn view_get_owner(ctx: &ScViewContext, f: &GetOwnerContext) {
+    f.results.owner().set_value(&f.state.owner().value());
+}
+
+pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
+    let pps: MapHashToMutableProductPass = f.state.productpasses();
+    
+    //let ppsIndex: i32 = pps.length();
+
+    let id = create_random_hash(ctx);
+    //check if ID is already in Array;
+    if pps.get_product_pass(&id).exists() {
+           ctx.panic("id already exist");
+    }
+    let did: String = "did:iota:".to_owned() + &id.to_string();
+    let name: String = f.params.name().value();
+    let issuer: ScAgentID = ctx.caller();
+    let amount: i64 = ctx.incoming().balance(&ScColor::IOTA);
+    
+    let version: u8 = 1;               //TEST IMPLEMENTATION - ADD as Parameter in create func like: f.params.version().value();
+    let decFood: bool = true;          //TEST IMPLEMENTATION - ADD as Parameter in create func
+    let decHygiene: bool = true;       //TEST IMPLEMENTATION - ADD as Parameter in create func
+    let chargeWeight: u64 = 1000000000; // in miligramm
+    let packageWeight: u64 = 2000;  // in miligramm
+    
+    let ppNew = ProductPass{
+        id: id,
+        did: did,
+        name: name,
+        issuer: issuer,
+        amount: amount,
+        version: version,
+        dec_food: decFood,
+        dec_hygiene: decHygiene,
+        charge_weight: chargeWeight, // in miligramm
+        package_weight: packageWeight //in miligramm
+    };
+    
+    let requiredToken = (&ppNew.charge_weight * f.state.price_per_mg().value()) as i64;
+    if &ppNew.amount < &requiredToken {
+        ctx.panic(&format!("Charge does not provide sufficient token. '{tokens}'are required", tokens=requiredToken.to_string()));
+        }
+    
+    
+    f.state.productpasses().get_product_pass(&ppNew.id).set_value(&ppNew);
+    f.results.id().set_value(&ppNew.id);
+    //f.events.ppcreated();
+}
+
+pub fn view_get_pp(ctx: &ScViewContext, f: &GetPPContext) {
+    let id = f.params.id().value();
+    let pps: MapHashToImmutableProductPass = f.state.productpasses();
+    
+    if pps.get_product_pass(&id).exists() {
+        let pp: ProductPass = pps.get_product_pass(&id).value();
+        
+        f.results.ppresult().set_value(&pp);
+        f.results.ppname().set_value(&pp.name);
+    }
+    
+    else {
+    ctx.log("Product Charge ID not found");
+    }
+}
+
+pub fn view_get_amount_of_required_funds(ctx: &ScViewContext, f: &GetAmountOfRequiredFundsContext) {
+    let requiredFunds: u64 = f.params.charge_weight().value() * f.state.price_per_mg().value();
+    f.results.token_required().set_value(requiredFunds);
+}
+
+pub fn view_get_token_per_package(ctx: &ScViewContext, f: &GetTokenPerPackageContext) {
+    let pass = f.params.prod_pass().value();
+    let pricePerMg = f.state.price_per_mg().value();
+    let tokenPerPackage: u64 =  pass.package_weight * pricePerMg;
+    
+    f.results.token_per_package().set_value(tokenPerPackage);
+}
+
+
+pub fn func_add_material(ctx: &ScFuncContext, f: &AddMaterialContext) {
+    
+    let id = f.params.id().value();
+    let material: String = f.params.mat().value();
+    let proportion: u8 = f.params.prop().value();  //CAUTION: Given in per mil!!! so div by 1000
+    
+    let newComp = Composition{
+        material: material,
+        proportion: proportion
+    };
+    
+    let the_composition = f.state.compositions().get_compositions(&id);
+    let index = the_composition.length();
+    
+    the_composition.get_composition(index).set_value(&newComp);
+    ctx.log("material added");
+}
+
+
+pub fn view_get_materials(ctx: &ScViewContext, f: &GetMaterialsContext) {
+    let id = f.params.id().value();
+    
+    let comp = f.state.compositions().get_compositions(&id);
+    let composition_results_proxy = f.results.compositions();
+    
+    for i in 0..comp.length() {
+        composition_results_proxy.get_composition(i).set_value(&comp.get_composition(i).value());
+    }
+    
+}
+
+//resets the material composition
+pub fn func_set_materials(ctx: &ScFuncContext, f: &SetMaterialsContext) {
+    
+    let id = f.params.id().value();
+    let newComp = f.params.comp();
+    
+    let composition = f.state.compositions().get_compositions(&id);
+    
+    composition.clear();
+    
+    for i in 0 .. newComp.length() {
+        composition.get_composition(i).set_value(&newComp.get_composition(i).value());
+    }
+
+}
+
+pub fn func_create_fraction(ctx: &ScFuncContext, f: &CreateFractionContext) {
+    
+    let fracID = create_random_hash(ctx);
+    let did: String = "did:iota:".to_owned() + &"frac".to_owned() + &fracID.to_string();
+    let name = f.params.name().value();
+    let decFood = true;                  //When any product is included without food declaration, the fraction will loose its food suitability 
+    let decHygiene = true;               //When any product is included without hygiene declaration, the fraction will loose its hygiene suitability 
+    let issuer: ScAgentID = ctx.caller();    
+    
+    let newFrac = Fraction {
+        frac_id: fracID,
+        did: did,
+        name: name,
+        dec_food: decFood,
+        dec_hygiene: decHygiene,
+        issuer: issuer,
+        amount: 0
+    };
+    
+    f.state.fractions().get_fraction(&newFrac.frac_id).set_value(&newFrac);
+    
+    let newFracComp = FracComposition {
+        material: "init".to_string(),
+        weight: 0
+        };
+    
+    f.state.frac_compositions().get_frac_compositions(&newFrac.frac_id).get_frac_composition(0).set_value(&newFracComp);
+    f.results.frac_id().set_value(&newFrac.frac_id); 			
+}
+
+pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) {
+    
+    let ppID = f.params.pp_id().value();
+    let fracID = f.params.frac_id().value();
+    let pp: ProductPass = f.state.productpasses().get_product_pass(&ppID).value();
+    let ppComp = f.state.compositions().get_compositions(&ppID);
+    let fracComp = f.state.frac_compositions().get_frac_compositions(&fracID);
+    
+    for i in 0..ppComp.length() {
+    
+        let mut foundMat: bool = false;
+        
+        for j in 0..fracComp.length() {
+            if ppComp.get_composition(i).value().material == fracComp.get_frac_composition(j).value().material {
+                let newWeight = fracComp.get_frac_composition(j).value().weight + ppComp.get_composition(i).value().proportion as u64 * pp.package_weight /1000;   // div by 1000 because proportion is in per mil
+                
+                let newShare = FracComposition {
+                    material: ppComp.get_composition(i).value().material,
+                    weight: newWeight
+                };
+                fracComp.get_frac_composition(j).set_value(&newShare);
+                foundMat = true;
+            }
+        if !foundMat {
+            let index = fracComp.length();
+            
+            let mat = ppComp.get_composition(i).value().material;
+            let wei: u64 = ppComp.get_composition(i).value().proportion as u64 * pp.package_weight / 1000;
+            
+            let newMat = FracComposition{
+                material: mat,
+                weight: wei
+            };
+            
+            fracComp.get_frac_composition(index).set_value(&newMat);
+            }
+        }
+        
+    }
+    
+    f.state.fractions().get_fraction(&fracID).value().amount += &pp.amount;
+    
+    //remove pp (if not possible set amount to 0)
+    //f.state.productpasses().get_product_pass(&ppID).delete();
+    //f.state.compositions().get_compositions(&ppID).remove();
+}
+
+pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
+    
+    let fracID = f.params.frac_id().value();
+    let fraction: Fraction = f.state.fractions().get_fraction(&fracID).value();
+
+    let recyclateID = create_random_hash(ctx);    
+    let did: String = "did:iota:".to_owned() + &"recy".to_owned() + &recyclateID.to_string();
+    let name = f.params.name().value();
+    let decFood = fraction.dec_food;                  //When any product is included without food declaration, the fraction will loose its food suitability 
+    let decHygiene = fraction.dec_hygiene;               //When any product is included without hygiene declaration, the fraction will loose its hygiene suitability 
+    let issuer: ScAgentID = ctx.caller();    
+    let amount: i64 = fraction.amount;
+    
+    let newRecy = Recyclate {
+        recy_id: recyclateID,
+        did: did,
+        name: name,
+        dec_food: decFood,
+        dec_hygiene: decHygiene,
+        issuer: issuer,
+        amount: amount
+    };
+    
+    f.state.recyclates().get_recyclate(&newRecy.recy_id).set_value(&newRecy);
+    
+    let newRecyCompProxy = f.state.recy_compositions().get_recy_compositions(&newRecy.recy_id);
+    let fracComp: ArrayOfMutableFracComposition = f.state.frac_compositions().get_frac_compositions(&fracID);
+    
+    for i in 0..fracComp.length() {
+        
+        let fComp = fracComp.get_frac_composition(i).value();
+        let mat = fComp.material;
+        let wei = fComp.weight;
+        
+        let recyComp = RecyComposition{
+            material: mat,
+            weight: wei
+        };
+        newRecyCompProxy.get_recy_composition(i).set_value(&	recyComp);
+    }
+    
+    f.results.recyclate_id().set_value(&newRecy.recy_id);
+    
+    //set amount of fraction to 0
+}
+
+
+fn create_random_hash(ctx: &ScFuncContext) -> ScHash {
+    let random_value: i64 = ctx.random(i64::MAX - 1) + 1;
+    let random_value_bytes: [u8; 8] = unsafe { std::mem::transmute(random_value.to_le()) };
+    let random_hash: ScHash = ctx.utility().hash_sha3(&random_value_bytes);
+
+    return random_hash;
+}
