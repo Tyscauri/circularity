@@ -278,3 +278,6 @@ fn create_random_hash(ctx: &ScFuncContext) -> ScHash {
 
     return random_hash;
 }
+
+pub fn func_payout(ctx: &ScFuncContext, f: &PayoutContext) {
+}

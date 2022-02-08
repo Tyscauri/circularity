@@ -1,6 +1,7 @@
 name: test3
 description: test3 description
-events: {}
+events:
+  payout:
 structs:
   ProductPass:
     id: Hash
@@ -93,6 +94,7 @@ funcs:
     results:
       fraction: Fraction
       recyclateID: Hash
+  payout:
 views:
   getPP:
     params: 

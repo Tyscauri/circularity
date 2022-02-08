@@ -13,6 +13,7 @@ use wasmlib::*;
 use wasmlib::host::*;
 
 use crate::consts::*;
+use crate::events::*;
 use crate::keys::*;
 use crate::params::*;
 use crate::results::*;
@@ -20,6 +21,7 @@ use crate::state::*;
 
 mod consts;
 mod contract;
+mod events;
 mod keys;
 mod params;
 mod results;
@@ -37,6 +39,7 @@ fn on_load() {
     exports.add_func(FUNC_CREATE_PP,                    func_create_pp_thunk);
     exports.add_func(FUNC_CREATE_RECYCLATE,             func_create_recyclate_thunk);
     exports.add_func(FUNC_INIT,                         func_init_thunk);
+    exports.add_func(FUNC_PAYOUT,                       func_payout_thunk);
     exports.add_func(FUNC_SET_MATERIALS,                func_set_materials_thunk);
     exports.add_func(FUNC_SET_OWNER,                    func_set_owner_thunk);
     exports.add_view(VIEW_GET_AMOUNT_OF_REQUIRED_FUNDS, view_get_amount_of_required_funds_thunk);
@@ -53,6 +56,7 @@ fn on_load() {
 }
 
 pub struct AddMaterialContext {
+	events:  test3Events,
 	params: ImmutableAddMaterialParams,
 	state: Mutabletest3State,
 }
@@ -60,6 +64,7 @@ pub struct AddMaterialContext {
 fn func_add_material_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcAddMaterial");
 	let f = AddMaterialContext {
+		events:  test3Events {},
 		params: ImmutableAddMaterialParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -75,6 +80,7 @@ fn func_add_material_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct AddPPToFractionContext {
+	events:  test3Events,
 	params: ImmutableAddPPToFractionParams,
 	results: MutableAddPPToFractionResults,
 	state: Mutabletest3State,
@@ -83,6 +89,7 @@ pub struct AddPPToFractionContext {
 fn func_add_pp_to_fraction_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcAddPPToFraction");
 	let f = AddPPToFractionContext {
+		events:  test3Events {},
 		params: ImmutableAddPPToFractionParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -100,6 +107,7 @@ fn func_add_pp_to_fraction_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct CreateFractionContext {
+	events:  test3Events,
 	params: ImmutableCreateFractionParams,
 	results: MutableCreateFractionResults,
 	state: Mutabletest3State,
@@ -108,6 +116,7 @@ pub struct CreateFractionContext {
 fn func_create_fraction_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreateFraction");
 	let f = CreateFractionContext {
+		events:  test3Events {},
 		params: ImmutableCreateFractionParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -123,6 +132,7 @@ fn func_create_fraction_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct CreatePPContext {
+	events:  test3Events,
 	params: ImmutableCreatePPParams,
 	results: MutableCreatePPResults,
 	state: Mutabletest3State,
@@ -131,6 +141,7 @@ pub struct CreatePPContext {
 fn func_create_pp_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreatePP");
 	let f = CreatePPContext {
+		events:  test3Events {},
 		params: ImmutableCreatePPParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -147,6 +158,7 @@ fn func_create_pp_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct CreateRecyclateContext {
+	events:  test3Events,
 	params: ImmutableCreateRecyclateParams,
 	results: MutableCreateRecyclateResults,
 	state: Mutabletest3State,
@@ -155,6 +167,7 @@ pub struct CreateRecyclateContext {
 fn func_create_recyclate_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreateRecyclate");
 	let f = CreateRecyclateContext {
+		events:  test3Events {},
 		params: ImmutableCreateRecyclateParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -171,6 +184,7 @@ fn func_create_recyclate_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct InitContext {
+	events:  test3Events,
 	params: ImmutableInitParams,
 	state: Mutabletest3State,
 }
@@ -178,6 +192,7 @@ pub struct InitContext {
 fn func_init_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcInit");
 	let f = InitContext {
+		events:  test3Events {},
 		params: ImmutableInitParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -189,7 +204,25 @@ fn func_init_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcInit ok");
 }
 
+pub struct PayoutContext {
+	events:  test3Events,
+	state: Mutabletest3State,
+}
+
+fn func_payout_thunk(ctx: &ScFuncContext) {
+	ctx.log("test3.funcPayout");
+	let f = PayoutContext {
+		events:  test3Events {},
+		state: Mutabletest3State {
+			id: OBJ_ID_STATE,
+		},
+	};
+	func_payout(ctx, &f);
+	ctx.log("test3.funcPayout ok");
+}
+
 pub struct SetMaterialsContext {
+	events:  test3Events,
 	params: ImmutableSetMaterialsParams,
 	state: Mutabletest3State,
 }
@@ -197,6 +230,7 @@ pub struct SetMaterialsContext {
 fn func_set_materials_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcSetMaterials");
 	let f = SetMaterialsContext {
+		events:  test3Events {},
 		params: ImmutableSetMaterialsParams {
 			id: OBJ_ID_PARAMS,
 		},
@@ -210,6 +244,7 @@ fn func_set_materials_thunk(ctx: &ScFuncContext) {
 }
 
 pub struct SetOwnerContext {
+	events:  test3Events,
 	params: ImmutableSetOwnerParams,
 	state: Mutabletest3State,
 }
@@ -223,6 +258,7 @@ fn func_set_owner_thunk(ctx: &ScFuncContext) {
 	ctx.require(ctx.caller() == access.value(), "no permission");
 
 	let f = SetOwnerContext {
+		events:  test3Events {},
 		params: ImmutableSetOwnerParams {
 			id: OBJ_ID_PARAMS,
 		},

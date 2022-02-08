@@ -49,6 +49,10 @@ pub struct InitCall {
 	pub params: MutableInitParams,
 }
 
+pub struct PayoutCall {
+	pub func: ScFunc,
+}
+
 pub struct SetMaterialsCall {
 	pub func: ScFunc,
 	pub params: MutableSetMaterialsParams,
@@ -148,6 +152,12 @@ impl ScFuncs {
         };
         f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
         f
+    }
+
+    pub fn payout(_ctx: & dyn ScFuncCallContext) -> PayoutCall {
+        PayoutCall {
+            func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT),
+        }
     }
 
     pub fn set_materials(_ctx: & dyn ScFuncCallContext) -> SetMaterialsCall {
