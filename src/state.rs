@@ -9,337 +9,327 @@
 #![allow(unused_imports)]
 
 use wasmlib::*;
-use wasmlib::host::*;
 
 use crate::*;
-use crate::keys::*;
-use crate::structs::*;
-use crate::typedefs::*;
 
+#[derive(Clone)]
 pub struct MapHashToImmutableCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableCompositions {
     pub fn get_compositions(&self, key: &ScHash) -> ImmutableCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        ImmutableCompositions { obj_id: sub_id }
+        ImmutableCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableFracCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableFracCompositions {
     pub fn get_frac_compositions(&self, key: &ScHash) -> ImmutableFracCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        ImmutableFracCompositions { obj_id: sub_id }
+        ImmutableFracCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableFraction {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableFraction {
     pub fn get_fraction(&self, key: &ScHash) -> ImmutableFraction {
-        ImmutableFraction { obj_id: self.obj_id, key_id: key.get_key_id() }
+        ImmutableFraction { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableFracPayoffKeys {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableFracPayoffKeys {
     pub fn get_frac_payoff_keys(&self, key: &ScHash) -> ImmutableFracPayoffKeys {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_AGENT_ID);
-        ImmutableFracPayoffKeys { obj_id: sub_id }
+        ImmutableFracPayoffKeys { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableFracPayoffs {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableFracPayoffs {
     pub fn get_frac_payoffs(&self, key: &ScHash) -> ImmutableFracPayoffs {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_MAP);
-        ImmutableFracPayoffs { obj_id: sub_id }
+        ImmutableFracPayoffs { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableProductPass {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableProductPass {
     pub fn get_product_pass(&self, key: &ScHash) -> ImmutableProductPass {
-        ImmutableProductPass { obj_id: self.obj_id, key_id: key.get_key_id() }
+        ImmutableProductPass { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableRecyCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableRecyCompositions {
     pub fn get_recy_compositions(&self, key: &ScHash) -> ImmutableRecyCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        ImmutableRecyCompositions { obj_id: sub_id }
+        ImmutableRecyCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToImmutableRecyclate {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToImmutableRecyclate {
     pub fn get_recyclate(&self, key: &ScHash) -> ImmutableRecyclate {
-        ImmutableRecyclate { obj_id: self.obj_id, key_id: key.get_key_id() }
+        ImmutableRecyclate { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Immutabletest3State {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl Immutabletest3State {
     pub fn compositions(&self) -> MapHashToImmutableCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_COMPOSITIONS), TYPE_MAP);
-		MapHashToImmutableCompositions { obj_id: map_id }
+		MapHashToImmutableCompositions { proxy: self.proxy.root(STATE_COMPOSITIONS) }
 	}
 
     pub fn frac_compositions(&self) -> MapHashToImmutableFracCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_FRAC_COMPOSITIONS), TYPE_MAP);
-		MapHashToImmutableFracCompositions { obj_id: map_id }
+		MapHashToImmutableFracCompositions { proxy: self.proxy.root(STATE_FRAC_COMPOSITIONS) }
 	}
 
     pub fn fractions(&self) -> MapHashToImmutableFraction {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_FRACTIONS), TYPE_MAP);
-		MapHashToImmutableFraction { obj_id: map_id }
+		MapHashToImmutableFraction { proxy: self.proxy.root(STATE_FRACTIONS) }
 	}
 
-    pub fn last_payout(&self) -> ScImmutableInt64 {
-		ScImmutableInt64::new(self.id, idx_map(IDX_STATE_LAST_PAYOUT))
+    pub fn last_payout(&self) -> ScImmutableUint64 {
+		ScImmutableUint64::new(self.proxy.root(STATE_LAST_PAYOUT))
 	}
 
     pub fn owner(&self) -> ScImmutableAgentID {
-		ScImmutableAgentID::new(self.id, idx_map(IDX_STATE_OWNER))
+		ScImmutableAgentID::new(self.proxy.root(STATE_OWNER))
 	}
 
     pub fn payoff_keys_frac(&self) -> MapHashToImmutableFracPayoffKeys {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFF_KEYS_FRAC), TYPE_MAP);
-		MapHashToImmutableFracPayoffKeys { obj_id: map_id }
+		MapHashToImmutableFracPayoffKeys { proxy: self.proxy.root(STATE_PAYOFF_KEYS_FRAC) }
 	}
 
     pub fn payoffs_frac(&self) -> MapHashToImmutableFracPayoffs {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFFS_FRAC), TYPE_MAP);
-		MapHashToImmutableFracPayoffs { obj_id: map_id }
+		MapHashToImmutableFracPayoffs { proxy: self.proxy.root(STATE_PAYOFFS_FRAC) }
 	}
 
     pub fn price_per_mg(&self) -> ScImmutableUint64 {
-		ScImmutableUint64::new(self.id, idx_map(IDX_STATE_PRICE_PER_MG))
+		ScImmutableUint64::new(self.proxy.root(STATE_PRICE_PER_MG))
 	}
 
     pub fn productpasses(&self) -> MapHashToImmutableProductPass {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PRODUCTPASSES), TYPE_MAP);
-		MapHashToImmutableProductPass { obj_id: map_id }
+		MapHashToImmutableProductPass { proxy: self.proxy.root(STATE_PRODUCTPASSES) }
 	}
 
     pub fn recy_compositions(&self) -> MapHashToImmutableRecyCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_RECY_COMPOSITIONS), TYPE_MAP);
-		MapHashToImmutableRecyCompositions { obj_id: map_id }
+		MapHashToImmutableRecyCompositions { proxy: self.proxy.root(STATE_RECY_COMPOSITIONS) }
 	}
 
     pub fn recyclates(&self) -> MapHashToImmutableRecyclate {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_RECYCLATES), TYPE_MAP);
-		MapHashToImmutableRecyclate { obj_id: map_id }
+		MapHashToImmutableRecyclate { proxy: self.proxy.root(STATE_RECYCLATES) }
 	}
 
     pub fn share_recycler(&self) -> ScImmutableUint8 {
-		ScImmutableUint8::new(self.id, idx_map(IDX_STATE_SHARE_RECYCLER))
+		ScImmutableUint8::new(self.proxy.root(STATE_SHARE_RECYCLER))
 	}
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableCompositions {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_compositions(&self, key: &ScHash) -> MutableCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        MutableCompositions { obj_id: sub_id }
+        MutableCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableFracCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableFracCompositions {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_frac_compositions(&self, key: &ScHash) -> MutableFracCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        MutableFracCompositions { obj_id: sub_id }
+        MutableFracCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableFraction {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableFraction {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_fraction(&self, key: &ScHash) -> MutableFraction {
-        MutableFraction { obj_id: self.obj_id, key_id: key.get_key_id() }
+        MutableFraction { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableFracPayoffKeys {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableFracPayoffKeys {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_frac_payoff_keys(&self, key: &ScHash) -> MutableFracPayoffKeys {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_AGENT_ID);
-        MutableFracPayoffKeys { obj_id: sub_id }
+        MutableFracPayoffKeys { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableFracPayoffs {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableFracPayoffs {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_frac_payoffs(&self, key: &ScHash) -> MutableFracPayoffs {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_MAP);
-        MutableFracPayoffs { obj_id: sub_id }
+        MutableFracPayoffs { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableProductPass {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableProductPass {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_product_pass(&self, key: &ScHash) -> MutableProductPass {
-        MutableProductPass { obj_id: self.obj_id, key_id: key.get_key_id() }
+        MutableProductPass { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableRecyCompositions {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableRecyCompositions {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_recy_compositions(&self, key: &ScHash) -> MutableRecyCompositions {
-        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_BYTES);
-        MutableRecyCompositions { obj_id: sub_id }
+        MutableRecyCompositions { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
+#[derive(Clone)]
 pub struct MapHashToMutableRecyclate {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapHashToMutableRecyclate {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_recyclate(&self, key: &ScHash) -> MutableRecyclate {
-        MutableRecyclate { obj_id: self.obj_id, key_id: key.get_key_id() }
+        MutableRecyclate { proxy: self.proxy.key(&hash_to_bytes(key)) }
     }
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct Mutabletest3State {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl Mutabletest3State {
+    pub fn as_immutable(&self) -> Immutabletest3State {
+		Immutabletest3State { proxy: self.proxy.root("") }
+	}
+
     pub fn compositions(&self) -> MapHashToMutableCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_COMPOSITIONS), TYPE_MAP);
-		MapHashToMutableCompositions { obj_id: map_id }
+		MapHashToMutableCompositions { proxy: self.proxy.root(STATE_COMPOSITIONS) }
 	}
 
     pub fn frac_compositions(&self) -> MapHashToMutableFracCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_FRAC_COMPOSITIONS), TYPE_MAP);
-		MapHashToMutableFracCompositions { obj_id: map_id }
+		MapHashToMutableFracCompositions { proxy: self.proxy.root(STATE_FRAC_COMPOSITIONS) }
 	}
 
     pub fn fractions(&self) -> MapHashToMutableFraction {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_FRACTIONS), TYPE_MAP);
-		MapHashToMutableFraction { obj_id: map_id }
+		MapHashToMutableFraction { proxy: self.proxy.root(STATE_FRACTIONS) }
 	}
 
-    pub fn last_payout(&self) -> ScMutableInt64 {
-		ScMutableInt64::new(self.id, idx_map(IDX_STATE_LAST_PAYOUT))
+    pub fn last_payout(&self) -> ScMutableUint64 {
+		ScMutableUint64::new(self.proxy.root(STATE_LAST_PAYOUT))
 	}
 
     pub fn owner(&self) -> ScMutableAgentID {
-		ScMutableAgentID::new(self.id, idx_map(IDX_STATE_OWNER))
+		ScMutableAgentID::new(self.proxy.root(STATE_OWNER))
 	}
 
     pub fn payoff_keys_frac(&self) -> MapHashToMutableFracPayoffKeys {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFF_KEYS_FRAC), TYPE_MAP);
-		MapHashToMutableFracPayoffKeys { obj_id: map_id }
+		MapHashToMutableFracPayoffKeys { proxy: self.proxy.root(STATE_PAYOFF_KEYS_FRAC) }
 	}
 
     pub fn payoffs_frac(&self) -> MapHashToMutableFracPayoffs {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFFS_FRAC), TYPE_MAP);
-		MapHashToMutableFracPayoffs { obj_id: map_id }
+		MapHashToMutableFracPayoffs { proxy: self.proxy.root(STATE_PAYOFFS_FRAC) }
 	}
 
     pub fn price_per_mg(&self) -> ScMutableUint64 {
-		ScMutableUint64::new(self.id, idx_map(IDX_STATE_PRICE_PER_MG))
+		ScMutableUint64::new(self.proxy.root(STATE_PRICE_PER_MG))
 	}
 
     pub fn productpasses(&self) -> MapHashToMutableProductPass {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PRODUCTPASSES), TYPE_MAP);
-		MapHashToMutableProductPass { obj_id: map_id }
+		MapHashToMutableProductPass { proxy: self.proxy.root(STATE_PRODUCTPASSES) }
 	}
 
     pub fn recy_compositions(&self) -> MapHashToMutableRecyCompositions {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_RECY_COMPOSITIONS), TYPE_MAP);
-		MapHashToMutableRecyCompositions { obj_id: map_id }
+		MapHashToMutableRecyCompositions { proxy: self.proxy.root(STATE_RECY_COMPOSITIONS) }
 	}
 
     pub fn recyclates(&self) -> MapHashToMutableRecyclate {
-		let map_id = get_object_id(self.id, idx_map(IDX_STATE_RECYCLATES), TYPE_MAP);
-		MapHashToMutableRecyclate { obj_id: map_id }
+		MapHashToMutableRecyclate { proxy: self.proxy.root(STATE_RECYCLATES) }
 	}
 
     pub fn share_recycler(&self) -> ScMutableUint8 {
-		ScMutableUint8::new(self.id, idx_map(IDX_STATE_SHARE_RECYCLER))
+		ScMutableUint8::new(self.proxy.root(STATE_SHARE_RECYCLER))
 	}
 }

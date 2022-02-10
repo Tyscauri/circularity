@@ -5,20 +5,28 @@
 // >>>> DO NOT CHANGE THIS FILE! <<<<
 // Change the json schema instead
 
+//go:build wasm
 // +build wasm
 
 package main
 
-import "github.com/iotaledger/wasp/packages/vm/wasmclient"
+import "github.com/iotaledger/wasp/packages/wasmvm/wasmvmhost"
 
 import "home/tim/Schreibtisch/circ_proto/test3/go/test3"
 
 func main() {
 }
 
+func init() {
+	wasmvmhost.ConnectWasmHost()
+}
+
+//export on_call
+func onCall(index int32) {
+	test3.OnLoad(index)
+}
+
 //export on_load
 func onLoad() {
-	h := &wasmclient.WasmVMHost{}
-	h.ConnectWasmHost()
-	test3.OnLoad()
+	test3.OnLoad(-1)
 }

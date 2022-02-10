@@ -10,49 +10,71 @@
 
 use test3::*;
 use wasmlib::*;
-use wasmlib::host::*;
 
 use crate::consts::*;
 use crate::events::*;
-use crate::keys::*;
 use crate::params::*;
 use crate::results::*;
 use crate::state::*;
+use crate::structs::*;
+use crate::typedefs::*;
 
 mod consts;
 mod contract;
 mod events;
-mod keys;
 mod params;
 mod results;
 mod state;
 mod structs;
 mod typedefs;
+
 mod test3;
+
+const EXPORT_MAP: ScExportMap = ScExportMap {
+    names: &[
+    	FUNC_ADD_MATERIAL,
+    	FUNC_ADD_PP_TO_FRACTION,
+    	FUNC_CREATE_FRACTION,
+    	FUNC_CREATE_PP,
+    	FUNC_CREATE_RECYCLATE,
+    	FUNC_INIT,
+    	FUNC_PAYOUT_FRAC,
+    	FUNC_SET_MATERIALS,
+    	FUNC_SET_OWNER,
+    	VIEW_GET_AMOUNT_OF_REQUIRED_FUNDS,
+    	VIEW_GET_MATERIALS,
+    	VIEW_GET_OWNER,
+    	VIEW_GET_PP,
+    	VIEW_GET_TOKEN_PER_PACKAGE,
+	],
+    funcs: &[
+    	func_add_material_thunk,
+    	func_add_pp_to_fraction_thunk,
+    	func_create_fraction_thunk,
+    	func_create_pp_thunk,
+    	func_create_recyclate_thunk,
+    	func_init_thunk,
+    	func_payout_frac_thunk,
+    	func_set_materials_thunk,
+    	func_set_owner_thunk,
+	],
+    views: &[
+    	view_get_amount_of_required_funds_thunk,
+    	view_get_materials_thunk,
+    	view_get_owner_thunk,
+    	view_get_pp_thunk,
+    	view_get_token_per_package_thunk,
+	],
+};
+
+#[no_mangle]
+fn on_call(index: i32) {
+	ScExports::call(index, &EXPORT_MAP);
+}
 
 #[no_mangle]
 fn on_load() {
-    let exports = ScExports::new();
-    exports.add_func(FUNC_ADD_MATERIAL,                 func_add_material_thunk);
-    exports.add_func(FUNC_ADD_PP_TO_FRACTION,           func_add_pp_to_fraction_thunk);
-    exports.add_func(FUNC_CREATE_FRACTION,              func_create_fraction_thunk);
-    exports.add_func(FUNC_CREATE_PP,                    func_create_pp_thunk);
-    exports.add_func(FUNC_CREATE_RECYCLATE,             func_create_recyclate_thunk);
-    exports.add_func(FUNC_INIT,                         func_init_thunk);
-    exports.add_func(FUNC_PAYOUT_FRAC,                  func_payout_frac_thunk);
-    exports.add_func(FUNC_SET_MATERIALS,                func_set_materials_thunk);
-    exports.add_func(FUNC_SET_OWNER,                    func_set_owner_thunk);
-    exports.add_view(VIEW_GET_AMOUNT_OF_REQUIRED_FUNDS, view_get_amount_of_required_funds_thunk);
-    exports.add_view(VIEW_GET_MATERIALS,                view_get_materials_thunk);
-    exports.add_view(VIEW_GET_OWNER,                    view_get_owner_thunk);
-    exports.add_view(VIEW_GET_PP,                       view_get_pp_thunk);
-    exports.add_view(VIEW_GET_TOKEN_PER_PACKAGE,        view_get_token_per_package_thunk);
-
-    unsafe {
-        for i in 0..KEY_MAP_LEN {
-            IDX_MAP[i] = get_key_id_from_string(KEY_MAP[i]);
-        }
-    }
+    ScExports::export(&EXPORT_MAP);
 }
 
 pub struct AddMaterialContext {
@@ -65,12 +87,8 @@ fn func_add_material_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcAddMaterial");
 	let f = AddMaterialContext {
 		events:  test3Events {},
-		params: ImmutableAddMaterialParams {
-			id: OBJ_ID_PARAMS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableAddMaterialParams { proxy: params_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	ctx.require(f.params.mat().exists(), "missing mandatory mat");
@@ -90,19 +108,14 @@ fn func_add_pp_to_fraction_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcAddPPToFraction");
 	let f = AddPPToFractionContext {
 		events:  test3Events {},
-		params: ImmutableAddPPToFractionParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableAddPPToFractionResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableAddPPToFractionParams { proxy: params_proxy() },
+		results: MutableAddPPToFractionResults { proxy: results_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	ctx.require(f.params.pp_id().exists(), "missing mandatory ppID");
 	func_add_pp_to_fraction(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.funcAddPPToFraction ok");
 }
 
@@ -117,17 +130,12 @@ fn func_create_fraction_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreateFraction");
 	let f = CreateFractionContext {
 		events:  test3Events {},
-		params: ImmutableCreateFractionParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableCreateFractionResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableCreateFractionParams { proxy: params_proxy() },
+		results: MutableCreateFractionResults { proxy: results_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	func_create_fraction(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.funcCreateFraction ok");
 }
 
@@ -142,18 +150,13 @@ fn func_create_pp_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreatePP");
 	let f = CreatePPContext {
 		events:  test3Events {},
-		params: ImmutableCreatePPParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableCreatePPResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableCreatePPParams { proxy: params_proxy() },
+		results: MutableCreatePPResults { proxy: results_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.name().exists(), "missing mandatory name");
 	func_create_pp(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.funcCreatePP ok");
 }
 
@@ -168,18 +171,13 @@ fn func_create_recyclate_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcCreateRecyclate");
 	let f = CreateRecyclateContext {
 		events:  test3Events {},
-		params: ImmutableCreateRecyclateParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableCreateRecyclateResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableCreateRecyclateParams { proxy: params_proxy() },
+		results: MutableCreateRecyclateResults { proxy: results_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	func_create_recyclate(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.funcCreateRecyclate ok");
 }
 
@@ -193,12 +191,8 @@ fn func_init_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcInit");
 	let f = InitContext {
 		events:  test3Events {},
-		params: ImmutableInitParams {
-			id: OBJ_ID_PARAMS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableInitParams { proxy: params_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	func_init(ctx, &f);
 	ctx.log("test3.funcInit ok");
@@ -214,12 +208,8 @@ fn func_payout_frac_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcPayoutFrac");
 	let f = PayoutFracContext {
 		events:  test3Events {},
-		params: ImmutablePayoutFracParams {
-			id: OBJ_ID_PARAMS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutablePayoutFracParams { proxy: params_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	func_payout_frac(ctx, &f);
@@ -236,12 +226,8 @@ fn func_set_materials_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcSetMaterials");
 	let f = SetMaterialsContext {
 		events:  test3Events {},
-		params: ImmutableSetMaterialsParams {
-			id: OBJ_ID_PARAMS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableSetMaterialsParams { proxy: params_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	func_set_materials(ctx, &f);
@@ -256,21 +242,17 @@ pub struct SetOwnerContext {
 
 fn func_set_owner_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcSetOwner");
+	let f = SetOwnerContext {
+		events:  test3Events {},
+		params: ImmutableSetOwnerParams { proxy: params_proxy() },
+		state: Mutabletest3State { proxy: state_proxy() },
+	};
 
 	// current owner of this smart contract
-	let access = ctx.state().get_agent_id("owner");
+	let access = f.state.owner();
 	ctx.require(access.exists(), "access not set: owner");
 	ctx.require(ctx.caller() == access.value(), "no permission");
 
-	let f = SetOwnerContext {
-		events:  test3Events {},
-		params: ImmutableSetOwnerParams {
-			id: OBJ_ID_PARAMS,
-		},
-		state: Mutabletest3State {
-			id: OBJ_ID_STATE,
-		},
-	};
 	ctx.require(f.params.owner().exists(), "missing mandatory owner");
 	func_set_owner(ctx, &f);
 	ctx.log("test3.funcSetOwner ok");
@@ -285,18 +267,13 @@ pub struct GetAmountOfRequiredFundsContext {
 fn view_get_amount_of_required_funds_thunk(ctx: &ScViewContext) {
 	ctx.log("test3.viewGetAmountOfRequiredFunds");
 	let f = GetAmountOfRequiredFundsContext {
-		params: ImmutableGetAmountOfRequiredFundsParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableGetAmountOfRequiredFundsResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Immutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableGetAmountOfRequiredFundsParams { proxy: params_proxy() },
+		results: MutableGetAmountOfRequiredFundsResults { proxy: results_proxy() },
+		state: Immutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.charge_weight().exists(), "missing mandatory chargeWeight");
 	view_get_amount_of_required_funds(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.viewGetAmountOfRequiredFunds ok");
 }
 
@@ -309,18 +286,13 @@ pub struct GetMaterialsContext {
 fn view_get_materials_thunk(ctx: &ScViewContext) {
 	ctx.log("test3.viewGetMaterials");
 	let f = GetMaterialsContext {
-		params: ImmutableGetMaterialsParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableGetMaterialsResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Immutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableGetMaterialsParams { proxy: params_proxy() },
+		results: MutableGetMaterialsResults { proxy: results_proxy() },
+		state: Immutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	view_get_materials(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.viewGetMaterials ok");
 }
 
@@ -332,14 +304,11 @@ pub struct GetOwnerContext {
 fn view_get_owner_thunk(ctx: &ScViewContext) {
 	ctx.log("test3.viewGetOwner");
 	let f = GetOwnerContext {
-		results: MutableGetOwnerResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Immutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		results: MutableGetOwnerResults { proxy: results_proxy() },
+		state: Immutabletest3State { proxy: state_proxy() },
 	};
 	view_get_owner(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.viewGetOwner ok");
 }
 
@@ -352,18 +321,13 @@ pub struct GetPPContext {
 fn view_get_pp_thunk(ctx: &ScViewContext) {
 	ctx.log("test3.viewGetPP");
 	let f = GetPPContext {
-		params: ImmutableGetPPParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableGetPPResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Immutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableGetPPParams { proxy: params_proxy() },
+		results: MutableGetPPResults { proxy: results_proxy() },
+		state: Immutabletest3State { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	view_get_pp(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.viewGetPP ok");
 }
 
@@ -376,17 +340,11 @@ pub struct GetTokenPerPackageContext {
 fn view_get_token_per_package_thunk(ctx: &ScViewContext) {
 	ctx.log("test3.viewGetTokenPerPackage");
 	let f = GetTokenPerPackageContext {
-		params: ImmutableGetTokenPerPackageParams {
-			id: OBJ_ID_PARAMS,
-		},
-		results: MutableGetTokenPerPackageResults {
-			id: OBJ_ID_RESULTS,
-		},
-		state: Immutabletest3State {
-			id: OBJ_ID_STATE,
-		},
+		params: ImmutableGetTokenPerPackageParams { proxy: params_proxy() },
+		results: MutableGetTokenPerPackageResults { proxy: results_proxy() },
+		state: Immutabletest3State { proxy: state_proxy() },
 	};
-	ctx.require(f.params.prod_pass().exists(), "missing mandatory prodPass");
 	view_get_token_per_package(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("test3.viewGetTokenPerPackage ok");
 }

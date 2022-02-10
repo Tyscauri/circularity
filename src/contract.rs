@@ -7,13 +7,8 @@
 
 #![allow(dead_code)]
 
-use std::ptr;
-
 use wasmlib::*;
-
-use crate::consts::*;
-use crate::params::*;
-use crate::results::*;
+use crate::*;
 
 pub struct AddMaterialCall {
 	pub func: ScFunc,
@@ -97,137 +92,145 @@ pub struct ScFuncs {
 }
 
 impl ScFuncs {
-    pub fn add_material(_ctx: & dyn ScFuncCallContext) -> AddMaterialCall {
+    pub fn add_material(_ctx: &dyn ScFuncCallContext) -> AddMaterialCall {
         let mut f = AddMaterialCall {
             func: ScFunc::new(HSC_NAME, HFUNC_ADD_MATERIAL),
-            params: MutableAddMaterialParams { id: 0 },
+            params: MutableAddMaterialParams { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
         f
     }
 
-    pub fn add_pp_to_fraction(_ctx: & dyn ScFuncCallContext) -> AddPPToFractionCall {
+    pub fn add_pp_to_fraction(_ctx: &dyn ScFuncCallContext) -> AddPPToFractionCall {
         let mut f = AddPPToFractionCall {
             func: ScFunc::new(HSC_NAME, HFUNC_ADD_PP_TO_FRACTION),
-            params: MutableAddPPToFractionParams { id: 0 },
-            results: ImmutableAddPPToFractionResults { id: 0 },
+            params: MutableAddPPToFractionParams { proxy: Proxy::nil() },
+            results: ImmutableAddPPToFractionResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
+        ScFunc::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn create_fraction(_ctx: & dyn ScFuncCallContext) -> CreateFractionCall {
+    pub fn create_fraction(_ctx: &dyn ScFuncCallContext) -> CreateFractionCall {
         let mut f = CreateFractionCall {
             func: ScFunc::new(HSC_NAME, HFUNC_CREATE_FRACTION),
-            params: MutableCreateFractionParams { id: 0 },
-            results: ImmutableCreateFractionResults { id: 0 },
+            params: MutableCreateFractionParams { proxy: Proxy::nil() },
+            results: ImmutableCreateFractionResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
+        ScFunc::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn create_pp(_ctx: & dyn ScFuncCallContext) -> CreatePPCall {
+    pub fn create_pp(_ctx: &dyn ScFuncCallContext) -> CreatePPCall {
         let mut f = CreatePPCall {
             func: ScFunc::new(HSC_NAME, HFUNC_CREATE_PP),
-            params: MutableCreatePPParams { id: 0 },
-            results: ImmutableCreatePPResults { id: 0 },
+            params: MutableCreatePPParams { proxy: Proxy::nil() },
+            results: ImmutableCreatePPResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
+        ScFunc::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn create_recyclate(_ctx: & dyn ScFuncCallContext) -> CreateRecyclateCall {
+    pub fn create_recyclate(_ctx: &dyn ScFuncCallContext) -> CreateRecyclateCall {
         let mut f = CreateRecyclateCall {
             func: ScFunc::new(HSC_NAME, HFUNC_CREATE_RECYCLATE),
-            params: MutableCreateRecyclateParams { id: 0 },
-            results: ImmutableCreateRecyclateResults { id: 0 },
+            params: MutableCreateRecyclateParams { proxy: Proxy::nil() },
+            results: ImmutableCreateRecyclateResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
+        ScFunc::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn init(_ctx: & dyn ScFuncCallContext) -> InitCall {
+    pub fn init(_ctx: &dyn ScFuncCallContext) -> InitCall {
         let mut f = InitCall {
             func: ScInitFunc::new(HSC_NAME, HFUNC_INIT),
-            params: MutableInitParams { id: 0 },
+            params: MutableInitParams { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        ScInitFunc::link_params(&mut f.params.proxy, &f.func);
         f
     }
 
-    pub fn payout_frac(_ctx: & dyn ScFuncCallContext) -> PayoutFracCall {
+    pub fn payout_frac(_ctx: &dyn ScFuncCallContext) -> PayoutFracCall {
         let mut f = PayoutFracCall {
             func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT_FRAC),
-            params: MutablePayoutFracParams { id: 0 },
+            params: MutablePayoutFracParams { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
         f
     }
 
-    pub fn set_materials(_ctx: & dyn ScFuncCallContext) -> SetMaterialsCall {
+    pub fn set_materials(_ctx: &dyn ScFuncCallContext) -> SetMaterialsCall {
         let mut f = SetMaterialsCall {
             func: ScFunc::new(HSC_NAME, HFUNC_SET_MATERIALS),
-            params: MutableSetMaterialsParams { id: 0 },
+            params: MutableSetMaterialsParams { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
         f
     }
 
-    pub fn set_owner(_ctx: & dyn ScFuncCallContext) -> SetOwnerCall {
+    pub fn set_owner(_ctx: &dyn ScFuncCallContext) -> SetOwnerCall {
         let mut f = SetOwnerCall {
             func: ScFunc::new(HSC_NAME, HFUNC_SET_OWNER),
-            params: MutableSetOwnerParams { id: 0 },
+            params: MutableSetOwnerParams { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
         f
     }
 
-    pub fn get_amount_of_required_funds(_ctx: & dyn ScViewCallContext) -> GetAmountOfRequiredFundsCall {
+    pub fn get_amount_of_required_funds(_ctx: &dyn ScViewCallContext) -> GetAmountOfRequiredFundsCall {
         let mut f = GetAmountOfRequiredFundsCall {
             func: ScView::new(HSC_NAME, HVIEW_GET_AMOUNT_OF_REQUIRED_FUNDS),
-            params: MutableGetAmountOfRequiredFundsParams { id: 0 },
-            results: ImmutableGetAmountOfRequiredFundsResults { id: 0 },
+            params: MutableGetAmountOfRequiredFundsParams { proxy: Proxy::nil() },
+            results: ImmutableGetAmountOfRequiredFundsResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScView::link_params(&mut f.params.proxy, &f.func);
+        ScView::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn get_materials(_ctx: & dyn ScViewCallContext) -> GetMaterialsCall {
+    pub fn get_materials(_ctx: &dyn ScViewCallContext) -> GetMaterialsCall {
         let mut f = GetMaterialsCall {
             func: ScView::new(HSC_NAME, HVIEW_GET_MATERIALS),
-            params: MutableGetMaterialsParams { id: 0 },
-            results: ImmutableGetMaterialsResults { id: 0 },
+            params: MutableGetMaterialsParams { proxy: Proxy::nil() },
+            results: ImmutableGetMaterialsResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScView::link_params(&mut f.params.proxy, &f.func);
+        ScView::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn get_owner(_ctx: & dyn ScViewCallContext) -> GetOwnerCall {
+    pub fn get_owner(_ctx: &dyn ScViewCallContext) -> GetOwnerCall {
         let mut f = GetOwnerCall {
             func: ScView::new(HSC_NAME, HVIEW_GET_OWNER),
-            results: ImmutableGetOwnerResults { id: 0 },
+            results: ImmutableGetOwnerResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(ptr::null_mut(), &mut f.results.id);
+        ScView::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn get_pp(_ctx: & dyn ScViewCallContext) -> GetPPCall {
+    pub fn get_pp(_ctx: &dyn ScViewCallContext) -> GetPPCall {
         let mut f = GetPPCall {
             func: ScView::new(HSC_NAME, HVIEW_GET_PP),
-            params: MutableGetPPParams { id: 0 },
-            results: ImmutableGetPPResults { id: 0 },
+            params: MutableGetPPParams { proxy: Proxy::nil() },
+            results: ImmutableGetPPResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScView::link_params(&mut f.params.proxy, &f.func);
+        ScView::link_results(&mut f.results.proxy, &f.func);
         f
     }
 
-    pub fn get_token_per_package(_ctx: & dyn ScViewCallContext) -> GetTokenPerPackageCall {
+    pub fn get_token_per_package(_ctx: &dyn ScViewCallContext) -> GetTokenPerPackageCall {
         let mut f = GetTokenPerPackageCall {
             func: ScView::new(HSC_NAME, HVIEW_GET_TOKEN_PER_PACKAGE),
-            params: MutableGetTokenPerPackageParams { id: 0 },
-            results: ImmutableGetTokenPerPackageResults { id: 0 },
+            params: MutableGetTokenPerPackageParams { proxy: Proxy::nil() },
+            results: ImmutableGetTokenPerPackageResults { proxy: Proxy::nil() },
         };
-        f.func.set_ptrs(&mut f.params.id, &mut f.results.id);
+        ScView::link_params(&mut f.params.proxy, &f.func);
+        ScView::link_results(&mut f.results.proxy, &f.func);
         f
     }
 }

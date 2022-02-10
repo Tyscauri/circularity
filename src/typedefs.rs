@@ -8,176 +8,207 @@
 #![allow(dead_code)]
 
 use wasmlib::*;
-use wasmlib::host::*;
-use crate::structs::*;
+use crate::*;
 
+#[derive(Clone)]
 pub struct ArrayOfImmutableComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfImmutableComposition {
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_composition(&self, index: i32) -> ImmutableComposition {
-		ImmutableComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_composition(&self, index: u32) -> ImmutableComposition {
+		ImmutableComposition { proxy: self.proxy.index(index) }
 	}
 }
 
 pub type ImmutableCompositions = ArrayOfImmutableComposition;
 
+#[derive(Clone)]
 pub struct ArrayOfMutableComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfMutableComposition {
-    pub fn clear(&self) {
-        clear(self.obj_id);
+
+	pub fn append_composition(&self) -> MutableComposition {
+		MutableComposition { proxy: self.proxy.append() }
+	}
+	pub fn clear(&self) {
+        self.proxy.clear_array();
     }
 
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_composition(&self, index: i32) -> MutableComposition {
-		MutableComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_composition(&self, index: u32) -> MutableComposition {
+		MutableComposition { proxy: self.proxy.index(index) }
 	}
 }
 
 pub type MutableCompositions = ArrayOfMutableComposition;
 
+#[derive(Clone)]
 pub struct ArrayOfImmutableFracComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfImmutableFracComposition {
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_frac_composition(&self, index: i32) -> ImmutableFracComposition {
-		ImmutableFracComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_frac_composition(&self, index: u32) -> ImmutableFracComposition {
+		ImmutableFracComposition { proxy: self.proxy.index(index) }
 	}
 }
 
 pub type ImmutableFracCompositions = ArrayOfImmutableFracComposition;
 
+#[derive(Clone)]
 pub struct ArrayOfMutableFracComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfMutableFracComposition {
-    pub fn clear(&self) {
-        clear(self.obj_id);
+
+	pub fn append_frac_composition(&self) -> MutableFracComposition {
+		MutableFracComposition { proxy: self.proxy.append() }
+	}
+	pub fn clear(&self) {
+        self.proxy.clear_array();
     }
 
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_frac_composition(&self, index: i32) -> MutableFracComposition {
-		MutableFracComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_frac_composition(&self, index: u32) -> MutableFracComposition {
+		MutableFracComposition { proxy: self.proxy.index(index) }
 	}
 }
 
 pub type MutableFracCompositions = ArrayOfMutableFracComposition;
 
+#[derive(Clone)]
 pub struct ArrayOfImmutableAgentID {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfImmutableAgentID {
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-    pub fn get_agent_id(&self, index: i32) -> ScImmutableAgentID {
-        ScImmutableAgentID::new(self.obj_id, Key32(index))
+    pub fn get_agent_id(&self, index: u32) -> ScImmutableAgentID {
+        ScImmutableAgentID::new(self.proxy.index(index))
     }
 }
 
 pub type ImmutableFracPayoffKeys = ArrayOfImmutableAgentID;
 
+#[derive(Clone)]
 pub struct ArrayOfMutableAgentID {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfMutableAgentID {
-    pub fn clear(&self) {
-        clear(self.obj_id);
+	pub fn append_agent_id(&self) -> ScMutableAgentID {
+		ScMutableAgentID::new(self.proxy.append())
+	}
+
+	pub fn clear(&self) {
+        self.proxy.clear_array();
     }
 
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-    pub fn get_agent_id(&self, index: i32) -> ScMutableAgentID {
-        ScMutableAgentID::new(self.obj_id, Key32(index))
+    pub fn get_agent_id(&self, index: u32) -> ScMutableAgentID {
+        ScMutableAgentID::new(self.proxy.index(index))
     }
 }
 
 pub type MutableFracPayoffKeys = ArrayOfMutableAgentID;
 
+#[derive(Clone)]
 pub struct MapAgentIDToImmutableUint64 {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapAgentIDToImmutableUint64 {
     pub fn get_uint64(&self, key: &ScAgentID) -> ScImmutableUint64 {
-        ScImmutableUint64::new(self.obj_id, key.get_key_id())
+        ScImmutableUint64::new(self.proxy.key(&agent_id_to_bytes(key)))
     }
 }
 
 pub type ImmutableFracPayoffs = MapAgentIDToImmutableUint64;
 
+#[derive(Clone)]
 pub struct MapAgentIDToMutableUint64 {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MapAgentIDToMutableUint64 {
     pub fn clear(&self) {
-        clear(self.obj_id);
+        self.proxy.clear_map();
     }
 
     pub fn get_uint64(&self, key: &ScAgentID) -> ScMutableUint64 {
-        ScMutableUint64::new(self.obj_id, key.get_key_id())
+        ScMutableUint64::new(self.proxy.key(&agent_id_to_bytes(key)))
     }
 }
 
 pub type MutableFracPayoffs = MapAgentIDToMutableUint64;
 
+#[derive(Clone)]
 pub struct ArrayOfImmutableRecyComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfImmutableRecyComposition {
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_recy_composition(&self, index: i32) -> ImmutableRecyComposition {
-		ImmutableRecyComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_recy_composition(&self, index: u32) -> ImmutableRecyComposition {
+		ImmutableRecyComposition { proxy: self.proxy.index(index) }
 	}
 }
 
 pub type ImmutableRecyCompositions = ArrayOfImmutableRecyComposition;
 
+#[derive(Clone)]
 pub struct ArrayOfMutableRecyComposition {
-	pub(crate) obj_id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ArrayOfMutableRecyComposition {
-    pub fn clear(&self) {
-        clear(self.obj_id);
+
+	pub fn append_recy_composition(&self) -> MutableRecyComposition {
+		MutableRecyComposition { proxy: self.proxy.append() }
+	}
+	pub fn clear(&self) {
+        self.proxy.clear_array();
     }
 
-    pub fn length(&self) -> i32 {
-        get_length(self.obj_id)
+    pub fn length(&self) -> u32 {
+        self.proxy.length()
     }
 
-	pub fn get_recy_composition(&self, index: i32) -> MutableRecyComposition {
-		MutableRecyComposition { obj_id: self.obj_id, key_id: Key32(index) }
+
+	pub fn get_recy_composition(&self, index: u32) -> MutableRecyComposition {
+		MutableRecyComposition { proxy: self.proxy.index(index) }
 	}
 }
 

@@ -8,7 +8,7 @@ structs:
     did: String //merged did:iota:id
     name: String
     issuer: AgentID //packaging producer
-    amount: Int64
+    amount: Uint64
     version: Uint8
     decFood: Bool
     decHygiene: Bool
@@ -24,7 +24,7 @@ structs:
     decFood: Bool
     decHygiene: Bool
     issuer: AgentID
-    amount: Int64
+    amount: Uint64
   FracComposition:
     material: String
     weight: Uint64 //in mg
@@ -35,7 +35,7 @@ structs:
     decFood: Bool
     decHygiene: Bool
     issuer: AgentID
-    amount: Int64
+    amount: Uint64
     fracId: Hash
   RecyComposition:
     material: String
@@ -58,7 +58,7 @@ state:
   recyCompositions: map[Hash]RecyCompositions
   payoffsFrac: map[Hash]FracPayoffs
   payoffKeysFrac: map[Hash]FracPayoffKeys
-  lastPayout: Int64
+  lastPayout: Uint64
 funcs:
   init:
     params:

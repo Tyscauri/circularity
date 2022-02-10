@@ -7,7 +7,7 @@ use crate::*;
 use crate::structs::*;
 use crate::typedefs::*;
 
-const NANO_TIME_DIVIDER: i64 = 1_000_000_000;
+const NANO_TIME_DIVIDER: u64 = 1_000_000_000;
 
 pub fn func_init(ctx: &ScFuncContext, f: &InitContext) {
     if f.params.owner().exists() {
@@ -41,7 +41,7 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
     let did: String = "did:iota:".to_owned() + &id.to_string();
     let name: String = f.params.name().value();
     let issuer: ScAgentID = ctx.caller();
-    let amount: i64 = ctx.incoming().balance(&ScColor::IOTA);
+    let amount: u64 = ctx.incoming().balance(&ScColor::IOTA);
     
     let version: u8 = 1;               //TEST IMPLEMENTATION - ADD as Parameter in create func like: f.params.version().value();
     let decFood: bool = true;          //TEST IMPLEMENTATION - ADD as Parameter in create func
@@ -62,7 +62,7 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
         package_weight: packageWeight //in miligramm
     };
     
-    let requiredToken = (&ppNew.charge_weight * f.state.price_per_mg().value()) as i64;
+    let requiredToken = &ppNew.charge_weight * f.state.price_per_mg().value();
     if &ppNew.amount < &requiredToken {
         ctx.panic(&format!("Charge does not provide sufficient token. '{tokens}'are required", tokens=requiredToken.to_string()));
         }
@@ -252,7 +252,7 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
     let decFood = fraction.dec_food;                  //When any product is included without food declaration, the fraction will loose its food suitability 
     let decHygiene = fraction.dec_hygiene;               //When any product is included without hygiene declaration, the fraction will loose its hygiene suitability 
     let issuer: ScAgentID = ctx.caller();    
-    let amount: i64 = fraction.amount;
+    let amount: u64 = fraction.amount;
     
     let newRecy = Recyclate {
         recy_id: recyclateID,
@@ -290,7 +290,7 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
 
 
 fn create_random_hash(ctx: &ScFuncContext) -> ScHash {
-    let random_value: i64 = ctx.random(i64::MAX - 1) + 1;
+    let random_value: u64 = ctx.random(u64::MAX - 1) + 1;
     let random_value_bytes: [u8; 8] = unsafe { std::mem::transmute(random_value.to_le()) };
     let random_hash: ScHash = ctx.utility().hash_sha3(&random_value_bytes);
 
@@ -320,7 +320,7 @@ pub fn func_payout(ctx: &ScFuncContext, f: &PayoutContext) {
 pub fn func_payout_frac(ctx: &ScFuncContext, f: &PayoutFracContext) {
     
     let lastpayout = f.state.last_payout();
-    let currentTime: i64 = ctx.timestamp() / NANO_TIME_DIVIDER;                   // timestamp in nano secs
+    let currentTime: u64 = ctx.timestamp() / NANO_TIME_DIVIDER;                   // timestamp in nano secs
     
     if lastpayout.value() + 86400 < currentTime{                                  //can be called only once per day (every 86400 seconds)
         let frac_id = f.params.frac_id().value();
@@ -329,7 +329,7 @@ pub fn func_payout_frac(ctx: &ScFuncContext, f: &PayoutFracContext) {
     
         for i in 0..keys.length() {
             let address: ScAgentID = keys.get_agent_id(i).value();
-            let payoff: i64 = payoffs_proxy.get_uint64(&address).value() as i64;
+            let payoff: u64 = payoffs_proxy.get_uint64(&address).value();
      
             if payoff > 0 {
         

@@ -9,233 +9,226 @@
 #![allow(unused_imports)]
 
 use wasmlib::*;
-use wasmlib::host::*;
-
 use crate::*;
-use crate::keys::*;
-use crate::structs::*;
-use crate::typedefs::*;
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableAddPPToFractionResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableAddPPToFractionResults {
     pub fn frac_id(&self) -> ScImmutableHash {
-		ScImmutableHash::new(self.id, idx_map(IDX_RESULT_FRAC_ID))
+		ScImmutableHash::new(self.proxy.root(RESULT_FRAC_ID))
 	}
 
     pub fn pp(&self) -> ImmutableProductPass {
-		ImmutableProductPass { obj_id: self.id, key_id: idx_map(IDX_RESULT_PP) }
+		ImmutableProductPass { proxy: self.proxy.root(RESULT_PP) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableAddPPToFractionResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableAddPPToFractionResults {
     pub fn frac_id(&self) -> ScMutableHash {
-		ScMutableHash::new(self.id, idx_map(IDX_RESULT_FRAC_ID))
+		ScMutableHash::new(self.proxy.root(RESULT_FRAC_ID))
 	}
 
     pub fn pp(&self) -> MutableProductPass {
-		MutableProductPass { obj_id: self.id, key_id: idx_map(IDX_RESULT_PP) }
+		MutableProductPass { proxy: self.proxy.root(RESULT_PP) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableCreateFractionResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableCreateFractionResults {
     pub fn frac_id(&self) -> ScImmutableHash {
-		ScImmutableHash::new(self.id, idx_map(IDX_RESULT_FRAC_ID))
+		ScImmutableHash::new(self.proxy.root(RESULT_FRAC_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableCreateFractionResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableCreateFractionResults {
     pub fn frac_id(&self) -> ScMutableHash {
-		ScMutableHash::new(self.id, idx_map(IDX_RESULT_FRAC_ID))
+		ScMutableHash::new(self.proxy.root(RESULT_FRAC_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableCreatePPResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableCreatePPResults {
     pub fn id(&self) -> ScImmutableHash {
-		ScImmutableHash::new(self.id, idx_map(IDX_RESULT_ID))
+		ScImmutableHash::new(self.proxy.root(RESULT_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableCreatePPResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableCreatePPResults {
     pub fn id(&self) -> ScMutableHash {
-		ScMutableHash::new(self.id, idx_map(IDX_RESULT_ID))
+		ScMutableHash::new(self.proxy.root(RESULT_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableCreateRecyclateResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableCreateRecyclateResults {
     pub fn fraction(&self) -> ImmutableFraction {
-		ImmutableFraction { obj_id: self.id, key_id: idx_map(IDX_RESULT_FRACTION) }
+		ImmutableFraction { proxy: self.proxy.root(RESULT_FRACTION) }
 	}
 
     pub fn recyclate_id(&self) -> ScImmutableHash {
-		ScImmutableHash::new(self.id, idx_map(IDX_RESULT_RECYCLATE_ID))
+		ScImmutableHash::new(self.proxy.root(RESULT_RECYCLATE_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableCreateRecyclateResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableCreateRecyclateResults {
     pub fn fraction(&self) -> MutableFraction {
-		MutableFraction { obj_id: self.id, key_id: idx_map(IDX_RESULT_FRACTION) }
+		MutableFraction { proxy: self.proxy.root(RESULT_FRACTION) }
 	}
 
     pub fn recyclate_id(&self) -> ScMutableHash {
-		ScMutableHash::new(self.id, idx_map(IDX_RESULT_RECYCLATE_ID))
+		ScMutableHash::new(self.proxy.root(RESULT_RECYCLATE_ID))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableGetAmountOfRequiredFundsResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableGetAmountOfRequiredFundsResults {
     pub fn token_required(&self) -> ScImmutableUint64 {
-		ScImmutableUint64::new(self.id, idx_map(IDX_RESULT_TOKEN_REQUIRED))
+		ScImmutableUint64::new(self.proxy.root(RESULT_TOKEN_REQUIRED))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableGetAmountOfRequiredFundsResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableGetAmountOfRequiredFundsResults {
     pub fn token_required(&self) -> ScMutableUint64 {
-		ScMutableUint64::new(self.id, idx_map(IDX_RESULT_TOKEN_REQUIRED))
+		ScMutableUint64::new(self.proxy.root(RESULT_TOKEN_REQUIRED))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableGetMaterialsResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableGetMaterialsResults {
     pub fn compositions(&self) -> ImmutableCompositions {
-		let sub_id = get_object_id(self.id, idx_map(IDX_RESULT_COMPOSITIONS), TYPE_ARRAY | TYPE_BYTES);
-		ImmutableCompositions { obj_id: sub_id }
+		ImmutableCompositions { proxy: self.proxy.root(RESULT_COMPOSITIONS) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableGetMaterialsResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableGetMaterialsResults {
     pub fn compositions(&self) -> MutableCompositions {
-		let sub_id = get_object_id(self.id, idx_map(IDX_RESULT_COMPOSITIONS), TYPE_ARRAY | TYPE_BYTES);
-		MutableCompositions { obj_id: sub_id }
+		MutableCompositions { proxy: self.proxy.root(RESULT_COMPOSITIONS) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableGetOwnerResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableGetOwnerResults {
     pub fn owner(&self) -> ScImmutableAgentID {
-		ScImmutableAgentID::new(self.id, idx_map(IDX_RESULT_OWNER))
+		ScImmutableAgentID::new(self.proxy.root(RESULT_OWNER))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableGetOwnerResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableGetOwnerResults {
     pub fn owner(&self) -> ScMutableAgentID {
-		ScMutableAgentID::new(self.id, idx_map(IDX_RESULT_OWNER))
+		ScMutableAgentID::new(self.proxy.root(RESULT_OWNER))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableGetPPResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableGetPPResults {
     pub fn ppname(&self) -> ScImmutableString {
-		ScImmutableString::new(self.id, idx_map(IDX_RESULT_PPNAME))
+		ScImmutableString::new(self.proxy.root(RESULT_PPNAME))
 	}
 
     pub fn ppresult(&self) -> ImmutableProductPass {
-		ImmutableProductPass { obj_id: self.id, key_id: idx_map(IDX_RESULT_PPRESULT) }
+		ImmutableProductPass { proxy: self.proxy.root(RESULT_PPRESULT) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableGetPPResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableGetPPResults {
     pub fn ppname(&self) -> ScMutableString {
-		ScMutableString::new(self.id, idx_map(IDX_RESULT_PPNAME))
+		ScMutableString::new(self.proxy.root(RESULT_PPNAME))
 	}
 
     pub fn ppresult(&self) -> MutableProductPass {
-		MutableProductPass { obj_id: self.id, key_id: idx_map(IDX_RESULT_PPRESULT) }
+		MutableProductPass { proxy: self.proxy.root(RESULT_PPRESULT) }
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct ImmutableGetTokenPerPackageResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl ImmutableGetTokenPerPackageResults {
     pub fn token_per_package(&self) -> ScImmutableUint64 {
-		ScImmutableUint64::new(self.id, idx_map(IDX_RESULT_TOKEN_PER_PACKAGE))
+		ScImmutableUint64::new(self.proxy.root(RESULT_TOKEN_PER_PACKAGE))
 	}
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 pub struct MutableGetTokenPerPackageResults {
-    pub(crate) id: i32,
+	pub(crate) proxy: Proxy,
 }
 
 impl MutableGetTokenPerPackageResults {
     pub fn token_per_package(&self) -> ScMutableUint64 {
-		ScMutableUint64::new(self.id, idx_map(IDX_RESULT_TOKEN_PER_PACKAGE))
+		ScMutableUint64::new(self.proxy.root(RESULT_TOKEN_PER_PACKAGE))
 	}
 }

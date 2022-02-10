@@ -9,9 +9,8 @@
 #![allow(unused_imports)]
 
 use wasmlib::*;
-use wasmlib::host::*;
-use crate::typedefs::*;
 
+#[derive(Clone)]
 pub struct Composition {
     pub material   : String, 
     pub proportion : u8, 
@@ -19,59 +18,60 @@ pub struct Composition {
 
 impl Composition {
     pub fn from_bytes(bytes: &[u8]) -> Composition {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         Composition {
-            material   : decode.string(),
-            proportion : decode.uint8(),
+            material   : string_decode(&mut dec),
+            proportion : uint8_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.string(&self.material);
-		encode.uint8(self.proportion);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		string_encode(&mut enc, &self.material);
+		uint8_encode(&mut enc, self.proportion);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableComposition {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> Composition {
-        Composition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Composition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableComposition {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &Composition) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> Composition {
-        Composition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Composition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct FracComposition {
     pub material : String, 
     pub weight   : u64,  //in mg
@@ -79,61 +79,62 @@ pub struct FracComposition {
 
 impl FracComposition {
     pub fn from_bytes(bytes: &[u8]) -> FracComposition {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         FracComposition {
-            material : decode.string(),
-            weight   : decode.uint64(),
+            material : string_decode(&mut dec),
+            weight   : uint64_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.string(&self.material);
-		encode.uint64(self.weight);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		string_encode(&mut enc, &self.material);
+		uint64_encode(&mut enc, self.weight);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableFracComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableFracComposition {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> FracComposition {
-        FracComposition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        FracComposition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableFracComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableFracComposition {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &FracComposition) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> FracComposition {
-        FracComposition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        FracComposition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct Fraction {
-    pub amount      : i64, 
+    pub amount      : u64, 
     pub dec_food    : bool, 
     pub dec_hygiene : bool, 
     pub did         : String, 
@@ -144,71 +145,72 @@ pub struct Fraction {
 
 impl Fraction {
     pub fn from_bytes(bytes: &[u8]) -> Fraction {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         Fraction {
-            amount      : decode.int64(),
-            dec_food    : decode.bool(),
-            dec_hygiene : decode.bool(),
-            did         : decode.string(),
-            frac_id     : decode.hash(),
-            issuer      : decode.agent_id(),
-            name        : decode.string(),
+            amount      : uint64_decode(&mut dec),
+            dec_food    : bool_decode(&mut dec),
+            dec_hygiene : bool_decode(&mut dec),
+            did         : string_decode(&mut dec),
+            frac_id     : hash_decode(&mut dec),
+            issuer      : agent_id_decode(&mut dec),
+            name        : string_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.int64(self.amount);
-		encode.bool(self.dec_food);
-		encode.bool(self.dec_hygiene);
-		encode.string(&self.did);
-		encode.hash(&self.frac_id);
-		encode.agent_id(&self.issuer);
-		encode.string(&self.name);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		uint64_encode(&mut enc, self.amount);
+		bool_encode(&mut enc, self.dec_food);
+		bool_encode(&mut enc, self.dec_hygiene);
+		string_encode(&mut enc, &self.did);
+		hash_encode(&mut enc, &self.frac_id);
+		agent_id_encode(&mut enc, &self.issuer);
+		string_encode(&mut enc, &self.name);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableFraction {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableFraction {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> Fraction {
-        Fraction::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Fraction::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableFraction {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableFraction {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &Fraction) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> Fraction {
-        Fraction::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Fraction::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct ProductPass {
-    pub amount         : i64, 
+    pub amount         : u64, 
     pub charge_weight  : u64, 
     pub dec_food       : bool, 
     pub dec_hygiene    : bool, 
@@ -222,75 +224,76 @@ pub struct ProductPass {
 
 impl ProductPass {
     pub fn from_bytes(bytes: &[u8]) -> ProductPass {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         ProductPass {
-            amount         : decode.int64(),
-            charge_weight  : decode.uint64(),
-            dec_food       : decode.bool(),
-            dec_hygiene    : decode.bool(),
-            did            : decode.string(),
-            id             : decode.hash(),
-            issuer         : decode.agent_id(),
-            name           : decode.string(),
-            package_weight : decode.uint64(),
-            version        : decode.uint8(),
+            amount         : uint64_decode(&mut dec),
+            charge_weight  : uint64_decode(&mut dec),
+            dec_food       : bool_decode(&mut dec),
+            dec_hygiene    : bool_decode(&mut dec),
+            did            : string_decode(&mut dec),
+            id             : hash_decode(&mut dec),
+            issuer         : agent_id_decode(&mut dec),
+            name           : string_decode(&mut dec),
+            package_weight : uint64_decode(&mut dec),
+            version        : uint8_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.int64(self.amount);
-		encode.uint64(self.charge_weight);
-		encode.bool(self.dec_food);
-		encode.bool(self.dec_hygiene);
-		encode.string(&self.did);
-		encode.hash(&self.id);
-		encode.agent_id(&self.issuer);
-		encode.string(&self.name);
-		encode.uint64(self.package_weight);
-		encode.uint8(self.version);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		uint64_encode(&mut enc, self.amount);
+		uint64_encode(&mut enc, self.charge_weight);
+		bool_encode(&mut enc, self.dec_food);
+		bool_encode(&mut enc, self.dec_hygiene);
+		string_encode(&mut enc, &self.did);
+		hash_encode(&mut enc, &self.id);
+		agent_id_encode(&mut enc, &self.issuer);
+		string_encode(&mut enc, &self.name);
+		uint64_encode(&mut enc, self.package_weight);
+		uint8_encode(&mut enc, self.version);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableProductPass {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableProductPass {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> ProductPass {
-        ProductPass::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        ProductPass::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableProductPass {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableProductPass {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &ProductPass) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> ProductPass {
-        ProductPass::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        ProductPass::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct RecyComposition {
     pub material : String, 
     pub weight   : u64,  //in mg
@@ -298,61 +301,62 @@ pub struct RecyComposition {
 
 impl RecyComposition {
     pub fn from_bytes(bytes: &[u8]) -> RecyComposition {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         RecyComposition {
-            material : decode.string(),
-            weight   : decode.uint64(),
+            material : string_decode(&mut dec),
+            weight   : uint64_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.string(&self.material);
-		encode.uint64(self.weight);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		string_encode(&mut enc, &self.material);
+		uint64_encode(&mut enc, self.weight);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableRecyComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableRecyComposition {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> RecyComposition {
-        RecyComposition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        RecyComposition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableRecyComposition {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableRecyComposition {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &RecyComposition) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> RecyComposition {
-        RecyComposition::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        RecyComposition::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct Recyclate {
-    pub amount      : i64, 
+    pub amount      : u64, 
     pub dec_food    : bool, 
     pub dec_hygiene : bool, 
     pub did         : String, 
@@ -364,67 +368,67 @@ pub struct Recyclate {
 
 impl Recyclate {
     pub fn from_bytes(bytes: &[u8]) -> Recyclate {
-        let mut decode = BytesDecoder::new(bytes);
+        let mut dec = WasmDecoder::new(bytes);
         Recyclate {
-            amount      : decode.int64(),
-            dec_food    : decode.bool(),
-            dec_hygiene : decode.bool(),
-            did         : decode.string(),
-            frac_id     : decode.hash(),
-            issuer      : decode.agent_id(),
-            name        : decode.string(),
-            recy_id     : decode.hash(),
+            amount      : uint64_decode(&mut dec),
+            dec_food    : bool_decode(&mut dec),
+            dec_hygiene : bool_decode(&mut dec),
+            did         : string_decode(&mut dec),
+            frac_id     : hash_decode(&mut dec),
+            issuer      : agent_id_decode(&mut dec),
+            name        : string_decode(&mut dec),
+            recy_id     : hash_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
-        let mut encode = BytesEncoder::new();
-		encode.int64(self.amount);
-		encode.bool(self.dec_food);
-		encode.bool(self.dec_hygiene);
-		encode.string(&self.did);
-		encode.hash(&self.frac_id);
-		encode.agent_id(&self.issuer);
-		encode.string(&self.name);
-		encode.hash(&self.recy_id);
-        return encode.data();
+        let mut enc = WasmEncoder::new();
+		uint64_encode(&mut enc, self.amount);
+		bool_encode(&mut enc, self.dec_food);
+		bool_encode(&mut enc, self.dec_hygiene);
+		string_encode(&mut enc, &self.did);
+		hash_encode(&mut enc, &self.frac_id);
+		agent_id_encode(&mut enc, &self.issuer);
+		string_encode(&mut enc, &self.name);
+		hash_encode(&mut enc, &self.recy_id);
+        enc.buf()
     }
 }
 
+#[derive(Clone)]
 pub struct ImmutableRecyclate {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl ImmutableRecyclate {
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn value(&self) -> Recyclate {
-        Recyclate::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Recyclate::from_bytes(&self.proxy.get())
     }
 }
 
+#[derive(Clone)]
 pub struct MutableRecyclate {
-    pub(crate) obj_id: i32,
-    pub(crate) key_id: Key32,
+    pub(crate) proxy: Proxy,
 }
 
 impl MutableRecyclate {
     pub fn delete(&self) {
-        del_key(self.obj_id, self.key_id, TYPE_BYTES);
+        self.proxy.delete();
     }
 
     pub fn exists(&self) -> bool {
-        exists(self.obj_id, self.key_id, TYPE_BYTES)
+        self.proxy.exists()
     }
 
     pub fn set_value(&self, value: &Recyclate) {
-        set_bytes(self.obj_id, self.key_id, TYPE_BYTES, &value.to_bytes());
+        self.proxy.set(&value.to_bytes());
     }
 
     pub fn value(&self) -> Recyclate {
-        Recyclate::from_bytes(&get_bytes(self.obj_id, self.key_id, TYPE_BYTES))
+        Recyclate::from_bytes(&self.proxy.get())
     }
 }
