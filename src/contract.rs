@@ -10,11 +10,6 @@
 use wasmlib::*;
 use crate::*;
 
-pub struct AddMaterialCall {
-	pub func: ScFunc,
-	pub params: MutableAddMaterialParams,
-}
-
 pub struct AddPPToFractionCall {
 	pub func: ScFunc,
 	pub params: MutableAddPPToFractionParams,
@@ -44,9 +39,9 @@ pub struct InitCall {
 	pub params: MutableInitParams,
 }
 
-pub struct PayoutFracCall {
+pub struct PayoutProducerCall {
 	pub func: ScFunc,
-	pub params: MutablePayoutFracParams,
+	pub params: MutablePayoutProducerParams,
 }
 
 pub struct SetMaterialsCall {
@@ -92,15 +87,6 @@ pub struct ScFuncs {
 }
 
 impl ScFuncs {
-    pub fn add_material(_ctx: &dyn ScFuncCallContext) -> AddMaterialCall {
-        let mut f = AddMaterialCall {
-            func: ScFunc::new(HSC_NAME, HFUNC_ADD_MATERIAL),
-            params: MutableAddMaterialParams { proxy: Proxy::nil() },
-        };
-        ScFunc::link_params(&mut f.params.proxy, &f.func);
-        f
-    }
-
     pub fn add_pp_to_fraction(_ctx: &dyn ScFuncCallContext) -> AddPPToFractionCall {
         let mut f = AddPPToFractionCall {
             func: ScFunc::new(HSC_NAME, HFUNC_ADD_PP_TO_FRACTION),
@@ -154,10 +140,10 @@ impl ScFuncs {
         f
     }
 
-    pub fn payout_frac(_ctx: &dyn ScFuncCallContext) -> PayoutFracCall {
-        let mut f = PayoutFracCall {
-            func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT_FRAC),
-            params: MutablePayoutFracParams { proxy: Proxy::nil() },
+    pub fn payout_producer(_ctx: &dyn ScFuncCallContext) -> PayoutProducerCall {
+        let mut f = PayoutProducerCall {
+            func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT_PRODUCER),
+            params: MutablePayoutProducerParams { proxy: Proxy::nil() },
         };
         ScFunc::link_params(&mut f.params.proxy, &f.func);
         f

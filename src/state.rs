@@ -46,28 +46,6 @@ impl MapHashToImmutableFraction {
 }
 
 #[derive(Clone)]
-pub struct MapHashToImmutableFracPayoffKeys {
-	pub(crate) proxy: Proxy,
-}
-
-impl MapHashToImmutableFracPayoffKeys {
-    pub fn get_frac_payoff_keys(&self, key: &ScHash) -> ImmutableFracPayoffKeys {
-        ImmutableFracPayoffKeys { proxy: self.proxy.key(&hash_to_bytes(key)) }
-    }
-}
-
-#[derive(Clone)]
-pub struct MapHashToImmutableFracPayoffs {
-	pub(crate) proxy: Proxy,
-}
-
-impl MapHashToImmutableFracPayoffs {
-    pub fn get_frac_payoffs(&self, key: &ScHash) -> ImmutableFracPayoffs {
-        ImmutableFracPayoffs { proxy: self.proxy.key(&hash_to_bytes(key)) }
-    }
-}
-
-#[derive(Clone)]
 pub struct MapHashToImmutableProductPass {
 	pub(crate) proxy: Proxy,
 }
@@ -110,6 +88,10 @@ impl ImmutablecircularityState {
 		MapHashToImmutableCompositions { proxy: self.proxy.root(STATE_COMPOSITIONS) }
 	}
 
+    pub fn donation_address(&self) -> ScImmutableAgentID {
+		ScImmutableAgentID::new(self.proxy.root(STATE_DONATION_ADDRESS))
+	}
+
     pub fn frac_compositions(&self) -> MapHashToImmutableFracCompositions {
 		MapHashToImmutableFracCompositions { proxy: self.proxy.root(STATE_FRAC_COMPOSITIONS) }
 	}
@@ -118,20 +100,8 @@ impl ImmutablecircularityState {
 		MapHashToImmutableFraction { proxy: self.proxy.root(STATE_FRACTIONS) }
 	}
 
-    pub fn last_payout(&self) -> ScImmutableUint64 {
-		ScImmutableUint64::new(self.proxy.root(STATE_LAST_PAYOUT))
-	}
-
     pub fn owner(&self) -> ScImmutableAgentID {
 		ScImmutableAgentID::new(self.proxy.root(STATE_OWNER))
-	}
-
-    pub fn payoff_keys_frac(&self) -> MapHashToImmutableFracPayoffKeys {
-		MapHashToImmutableFracPayoffKeys { proxy: self.proxy.root(STATE_PAYOFF_KEYS_FRAC) }
-	}
-
-    pub fn payoffs_frac(&self) -> MapHashToImmutableFracPayoffs {
-		MapHashToImmutableFracPayoffs { proxy: self.proxy.root(STATE_PAYOFFS_FRAC) }
 	}
 
     pub fn price_per_mg(&self) -> ScImmutableUint64 {
@@ -201,36 +171,6 @@ impl MapHashToMutableFraction {
 }
 
 #[derive(Clone)]
-pub struct MapHashToMutableFracPayoffKeys {
-	pub(crate) proxy: Proxy,
-}
-
-impl MapHashToMutableFracPayoffKeys {
-    pub fn clear(&self) {
-        self.proxy.clear_map();
-    }
-
-    pub fn get_frac_payoff_keys(&self, key: &ScHash) -> MutableFracPayoffKeys {
-        MutableFracPayoffKeys { proxy: self.proxy.key(&hash_to_bytes(key)) }
-    }
-}
-
-#[derive(Clone)]
-pub struct MapHashToMutableFracPayoffs {
-	pub(crate) proxy: Proxy,
-}
-
-impl MapHashToMutableFracPayoffs {
-    pub fn clear(&self) {
-        self.proxy.clear_map();
-    }
-
-    pub fn get_frac_payoffs(&self, key: &ScHash) -> MutableFracPayoffs {
-        MutableFracPayoffs { proxy: self.proxy.key(&hash_to_bytes(key)) }
-    }
-}
-
-#[derive(Clone)]
 pub struct MapHashToMutableProductPass {
 	pub(crate) proxy: Proxy,
 }
@@ -289,6 +229,10 @@ impl MutablecircularityState {
 		MapHashToMutableCompositions { proxy: self.proxy.root(STATE_COMPOSITIONS) }
 	}
 
+    pub fn donation_address(&self) -> ScMutableAgentID {
+		ScMutableAgentID::new(self.proxy.root(STATE_DONATION_ADDRESS))
+	}
+
     pub fn frac_compositions(&self) -> MapHashToMutableFracCompositions {
 		MapHashToMutableFracCompositions { proxy: self.proxy.root(STATE_FRAC_COMPOSITIONS) }
 	}
@@ -297,20 +241,8 @@ impl MutablecircularityState {
 		MapHashToMutableFraction { proxy: self.proxy.root(STATE_FRACTIONS) }
 	}
 
-    pub fn last_payout(&self) -> ScMutableUint64 {
-		ScMutableUint64::new(self.proxy.root(STATE_LAST_PAYOUT))
-	}
-
     pub fn owner(&self) -> ScMutableAgentID {
 		ScMutableAgentID::new(self.proxy.root(STATE_OWNER))
-	}
-
-    pub fn payoff_keys_frac(&self) -> MapHashToMutableFracPayoffKeys {
-		MapHashToMutableFracPayoffKeys { proxy: self.proxy.root(STATE_PAYOFF_KEYS_FRAC) }
-	}
-
-    pub fn payoffs_frac(&self) -> MapHashToMutableFracPayoffs {
-		MapHashToMutableFracPayoffs { proxy: self.proxy.root(STATE_PAYOFFS_FRAC) }
 	}
 
     pub fn price_per_mg(&self) -> ScMutableUint64 {

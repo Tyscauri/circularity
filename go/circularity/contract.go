@@ -9,11 +9,6 @@ package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib"
 
-type AddMaterialCall struct {
-	Func    *wasmlib.ScFunc
-	Params  MutableAddMaterialParams
-}
-
 type AddPPToFractionCall struct {
 	Func    *wasmlib.ScFunc
 	Params  MutableAddPPToFractionParams
@@ -43,9 +38,9 @@ type InitCall struct {
 	Params  MutableInitParams
 }
 
-type PayoutFracCall struct {
+type PayoutProducerCall struct {
 	Func    *wasmlib.ScFunc
-	Params  MutablePayoutFracParams
+	Params  MutablePayoutProducerParams
 }
 
 type SetMaterialsCall struct {
@@ -91,12 +86,6 @@ type Funcs struct{}
 
 var ScFuncs Funcs
 
-func (sc Funcs) AddMaterial(ctx wasmlib.ScFuncCallContext) *AddMaterialCall {
-	f := &AddMaterialCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncAddMaterial)}
-	f.Params.proxy = wasmlib.NewCallParamsProxy(&f.Func.ScView)
-	return f
-}
-
 func (sc Funcs) AddPPToFraction(ctx wasmlib.ScFuncCallContext) *AddPPToFractionCall {
 	f := &AddPPToFractionCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncAddPPToFraction)}
 	f.Params.proxy = wasmlib.NewCallParamsProxy(&f.Func.ScView)
@@ -131,8 +120,8 @@ func (sc Funcs) Init(ctx wasmlib.ScFuncCallContext) *InitCall {
 	return f
 }
 
-func (sc Funcs) PayoutFrac(ctx wasmlib.ScFuncCallContext) *PayoutFracCall {
-	f := &PayoutFracCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncPayoutFrac)}
+func (sc Funcs) PayoutProducer(ctx wasmlib.ScFuncCallContext) *PayoutProducerCall {
+	f := &PayoutProducerCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncPayoutProducer)}
 	f.Params.proxy = wasmlib.NewCallParamsProxy(&f.Func.ScView)
 	return f
 }

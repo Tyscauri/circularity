@@ -53,3 +53,9 @@ func viewGetPP(ctx wasmlib.ScViewContext, f *GetPPContext) {
 
 func viewGetTokenPerPackage(ctx wasmlib.ScViewContext, f *GetTokenPerPackageContext) {
 }
+
+func funcTickerPPToSameFraction(ctx wasmlib.ScFuncContext, f *TickerPPToSameFractionContext) {
+}
+
+func funcPayoutProducer(ctx wasmlib.ScFuncContext, f *PayoutProducerContext) {
+}

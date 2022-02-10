@@ -33,22 +33,6 @@ func (m MapHashToImmutableFraction) GetFraction(key wasmtypes.ScHash) ImmutableF
 	return ImmutableFraction{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
 }
 
-type MapHashToImmutableFracPayoffKeys struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapHashToImmutableFracPayoffKeys) GetFracPayoffKeys(key wasmtypes.ScHash) ImmutableFracPayoffKeys {
-	return ImmutableFracPayoffKeys{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
-}
-
-type MapHashToImmutableFracPayoffs struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapHashToImmutableFracPayoffs) GetFracPayoffs(key wasmtypes.ScHash) ImmutableFracPayoffs {
-	return ImmutableFracPayoffs{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
-}
-
 type MapHashToImmutableProductPass struct {
 	proxy wasmtypes.Proxy
 }
@@ -81,6 +65,10 @@ func (s ImmutablecircularityState) Compositions() MapHashToImmutableCompositions
 	return MapHashToImmutableCompositions{proxy: s.proxy.Root(StateCompositions)}
 }
 
+func (s ImmutablecircularityState) DonationAddress() wasmtypes.ScImmutableAgentID {
+	return wasmtypes.NewScImmutableAgentID(s.proxy.Root(StateDonationAddress))
+}
+
 func (s ImmutablecircularityState) FracCompositions() MapHashToImmutableFracCompositions {
 	return MapHashToImmutableFracCompositions{proxy: s.proxy.Root(StateFracCompositions)}
 }
@@ -89,20 +77,8 @@ func (s ImmutablecircularityState) Fractions() MapHashToImmutableFraction {
 	return MapHashToImmutableFraction{proxy: s.proxy.Root(StateFractions)}
 }
 
-func (s ImmutablecircularityState) LastPayout() wasmtypes.ScImmutableUint64 {
-	return wasmtypes.NewScImmutableUint64(s.proxy.Root(StateLastPayout))
-}
-
 func (s ImmutablecircularityState) Owner() wasmtypes.ScImmutableAgentID {
 	return wasmtypes.NewScImmutableAgentID(s.proxy.Root(StateOwner))
-}
-
-func (s ImmutablecircularityState) PayoffKeysFrac() MapHashToImmutableFracPayoffKeys {
-	return MapHashToImmutableFracPayoffKeys{proxy: s.proxy.Root(StatePayoffKeysFrac)}
-}
-
-func (s ImmutablecircularityState) PayoffsFrac() MapHashToImmutableFracPayoffs {
-	return MapHashToImmutableFracPayoffs{proxy: s.proxy.Root(StatePayoffsFrac)}
 }
 
 func (s ImmutablecircularityState) PricePerMg() wasmtypes.ScImmutableUint64 {
@@ -161,30 +137,6 @@ func (m MapHashToMutableFraction) GetFraction(key wasmtypes.ScHash) MutableFract
 	return MutableFraction{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
 }
 
-type MapHashToMutableFracPayoffKeys struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapHashToMutableFracPayoffKeys) Clear() {
-	m.proxy.ClearMap()
-}
-
-func (m MapHashToMutableFracPayoffKeys) GetFracPayoffKeys(key wasmtypes.ScHash) MutableFracPayoffKeys {
-	return MutableFracPayoffKeys{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
-}
-
-type MapHashToMutableFracPayoffs struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapHashToMutableFracPayoffs) Clear() {
-	m.proxy.ClearMap()
-}
-
-func (m MapHashToMutableFracPayoffs) GetFracPayoffs(key wasmtypes.ScHash) MutableFracPayoffs {
-	return MutableFracPayoffs{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
-}
-
 type MapHashToMutableProductPass struct {
 	proxy wasmtypes.Proxy
 }
@@ -233,6 +185,10 @@ func (s MutablecircularityState) Compositions() MapHashToMutableCompositions {
 	return MapHashToMutableCompositions{proxy: s.proxy.Root(StateCompositions)}
 }
 
+func (s MutablecircularityState) DonationAddress() wasmtypes.ScMutableAgentID {
+	return wasmtypes.NewScMutableAgentID(s.proxy.Root(StateDonationAddress))
+}
+
 func (s MutablecircularityState) FracCompositions() MapHashToMutableFracCompositions {
 	return MapHashToMutableFracCompositions{proxy: s.proxy.Root(StateFracCompositions)}
 }
@@ -241,20 +197,8 @@ func (s MutablecircularityState) Fractions() MapHashToMutableFraction {
 	return MapHashToMutableFraction{proxy: s.proxy.Root(StateFractions)}
 }
 
-func (s MutablecircularityState) LastPayout() wasmtypes.ScMutableUint64 {
-	return wasmtypes.NewScMutableUint64(s.proxy.Root(StateLastPayout))
-}
-
 func (s MutablecircularityState) Owner() wasmtypes.ScMutableAgentID {
 	return wasmtypes.NewScMutableAgentID(s.proxy.Root(StateOwner))
-}
-
-func (s MutablecircularityState) PayoffKeysFrac() MapHashToMutableFracPayoffKeys {
-	return MapHashToMutableFracPayoffKeys{proxy: s.proxy.Root(StatePayoffKeysFrac)}
-}
-
-func (s MutablecircularityState) PayoffsFrac() MapHashToMutableFracPayoffs {
-	return MapHashToMutableFracPayoffs{proxy: s.proxy.Root(StatePayoffsFrac)}
 }
 
 func (s MutablecircularityState) PricePerMg() wasmtypes.ScMutableUint64 {

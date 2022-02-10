@@ -32,13 +32,12 @@ mod circularity;
 
 const EXPORT_MAP: ScExportMap = ScExportMap {
     names: &[
-    	FUNC_ADD_MATERIAL,
     	FUNC_ADD_PP_TO_FRACTION,
     	FUNC_CREATE_FRACTION,
     	FUNC_CREATE_PP,
     	FUNC_CREATE_RECYCLATE,
     	FUNC_INIT,
-    	FUNC_PAYOUT_FRAC,
+    	FUNC_PAYOUT_PRODUCER,
     	FUNC_SET_MATERIALS,
     	FUNC_SET_OWNER,
     	VIEW_GET_AMOUNT_OF_REQUIRED_FUNDS,
@@ -48,13 +47,12 @@ const EXPORT_MAP: ScExportMap = ScExportMap {
     	VIEW_GET_TOKEN_PER_PACKAGE,
 	],
     funcs: &[
-    	func_add_material_thunk,
     	func_add_pp_to_fraction_thunk,
     	func_create_fraction_thunk,
     	func_create_pp_thunk,
     	func_create_recyclate_thunk,
     	func_init_thunk,
-    	func_payout_frac_thunk,
+    	func_payout_producer_thunk,
     	func_set_materials_thunk,
     	func_set_owner_thunk,
 	],
@@ -75,26 +73,6 @@ fn on_call(index: i32) {
 #[no_mangle]
 fn on_load() {
     ScExports::export(&EXPORT_MAP);
-}
-
-pub struct AddMaterialContext {
-	events:  circularityEvents,
-	params: ImmutableAddMaterialParams,
-	state: MutablecircularityState,
-}
-
-fn func_add_material_thunk(ctx: &ScFuncContext) {
-	ctx.log("circularity.funcAddMaterial");
-	let f = AddMaterialContext {
-		events:  circularityEvents {},
-		params: ImmutableAddMaterialParams { proxy: params_proxy() },
-		state: MutablecircularityState { proxy: state_proxy() },
-	};
-	ctx.require(f.params.id().exists(), "missing mandatory id");
-	ctx.require(f.params.mat().exists(), "missing mandatory mat");
-	ctx.require(f.params.prop().exists(), "missing mandatory prop");
-	func_add_material(ctx, &f);
-	ctx.log("circularity.funcAddMaterial ok");
 }
 
 pub struct AddPPToFractionContext {
@@ -134,6 +112,7 @@ fn func_create_fraction_thunk(ctx: &ScFuncContext) {
 		results: MutableCreateFractionResults { proxy: results_proxy() },
 		state: MutablecircularityState { proxy: state_proxy() },
 	};
+	ctx.require(f.params.purpose().exists(), "missing mandatory purpose");
 	func_create_fraction(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("circularity.funcCreateFraction ok");
@@ -155,6 +134,7 @@ fn func_create_pp_thunk(ctx: &ScFuncContext) {
 		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.name().exists(), "missing mandatory name");
+	ctx.require(f.params.purpose().exists(), "missing mandatory purpose");
 	func_create_pp(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("circularity.funcCreatePP ok");
@@ -198,22 +178,22 @@ fn func_init_thunk(ctx: &ScFuncContext) {
 	ctx.log("circularity.funcInit ok");
 }
 
-pub struct PayoutFracContext {
+pub struct PayoutProducerContext {
 	events:  circularityEvents,
-	params: ImmutablePayoutFracParams,
+	params: ImmutablePayoutProducerParams,
 	state: MutablecircularityState,
 }
 
-fn func_payout_frac_thunk(ctx: &ScFuncContext) {
-	ctx.log("circularity.funcPayoutFrac");
-	let f = PayoutFracContext {
+fn func_payout_producer_thunk(ctx: &ScFuncContext) {
+	ctx.log("circularity.funcPayoutProducer");
+	let f = PayoutProducerContext {
 		events:  circularityEvents {},
-		params: ImmutablePayoutFracParams { proxy: params_proxy() },
+		params: ImmutablePayoutProducerParams { proxy: params_proxy() },
 		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
-	func_payout_frac(ctx, &f);
-	ctx.log("circularity.funcPayoutFrac ok");
+	func_payout_producer(ctx, &f);
+	ctx.log("circularity.funcPayoutProducer ok");
 }
 
 pub struct SetMaterialsContext {

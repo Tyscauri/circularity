@@ -20,12 +20,11 @@ const (
 	ParamComp         = "comp"
 	ParamFracID       = "fracID"
 	ParamId           = "id"
-	ParamMat          = "mat"
 	ParamName         = "name"
 	ParamOwner        = "owner"
 	ParamPpID         = "ppID"
 	ParamProdPass     = "prodPass"
-	ParamProp         = "prop"
+	ParamPurpose      = "purpose"
 )
 
 const (
@@ -44,12 +43,10 @@ const (
 
 const (
 	StateCompositions     = "compositions"
+	StateDonationAddress  = "donationAddress"
 	StateFracCompositions = "fracCompositions"
 	StateFractions        = "fractions"
-	StateLastPayout       = "lastPayout"
 	StateOwner            = "owner"
-	StatePayoffKeysFrac   = "payoffKeysFrac"
-	StatePayoffsFrac      = "payoffsFrac"
 	StatePricePerMg       = "pricePerMg"
 	StateProductpasses    = "productpasses"
 	StateRecyCompositions = "recyCompositions"
@@ -58,13 +55,12 @@ const (
 )
 
 const (
-	FuncAddMaterial              = "addMaterial"
 	FuncAddPPToFraction          = "addPPToFraction"
 	FuncCreateFraction           = "createFraction"
 	FuncCreatePP                 = "createPP"
 	FuncCreateRecyclate          = "createRecyclate"
 	FuncInit                     = "init"
-	FuncPayoutFrac               = "payoutFrac"
+	FuncPayoutProducer           = "payoutProducer"
 	FuncSetMaterials             = "setMaterials"
 	FuncSetOwner                 = "setOwner"
 	ViewGetAmountOfRequiredFunds = "getAmountOfRequiredFunds"
@@ -75,13 +71,12 @@ const (
 )
 
 const (
-	HFuncAddMaterial              = wasmtypes.ScHname(0xdfeea1ff)
 	HFuncAddPPToFraction          = wasmtypes.ScHname(0x50ac50a7)
 	HFuncCreateFraction           = wasmtypes.ScHname(0x59842fc3)
 	HFuncCreatePP                 = wasmtypes.ScHname(0x673fc3d7)
 	HFuncCreateRecyclate          = wasmtypes.ScHname(0x5066d840)
 	HFuncInit                     = wasmtypes.ScHname(0x1f44d644)
-	HFuncPayoutFrac               = wasmtypes.ScHname(0x363bbfc5)
+	HFuncPayoutProducer           = wasmtypes.ScHname(0x3a56494b)
 	HFuncSetMaterials             = wasmtypes.ScHname(0x7f0ebcae)
 	HFuncSetOwner                 = wasmtypes.ScHname(0x2a15fe7b)
 	HViewGetAmountOfRequiredFunds = wasmtypes.ScHname(0xbcbaf2d6)

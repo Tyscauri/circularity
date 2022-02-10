@@ -12,13 +12,12 @@ import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib"
 
 var exportMap = wasmlib.ScExportMap{
 	Names: []string{
-    	FuncAddMaterial,
     	FuncAddPPToFraction,
     	FuncCreateFraction,
     	FuncCreatePP,
     	FuncCreateRecyclate,
     	FuncInit,
-    	FuncPayoutFrac,
+    	FuncPayoutProducer,
     	FuncSetMaterials,
     	FuncSetOwner,
     	ViewGetAmountOfRequiredFunds,
@@ -28,13 +27,12 @@ var exportMap = wasmlib.ScExportMap{
     	ViewGetTokenPerPackage,
 	},
 	Funcs: []wasmlib.ScFuncContextFunction{
-    	funcAddMaterialThunk,
     	funcAddPPToFractionThunk,
     	funcCreateFractionThunk,
     	funcCreatePPThunk,
     	funcCreateRecyclateThunk,
     	funcInitThunk,
-    	funcPayoutFracThunk,
+    	funcPayoutProducerThunk,
     	funcSetMaterialsThunk,
     	funcSetOwnerThunk,
 	},
@@ -54,29 +52,6 @@ func OnLoad(index int32) {
 	}
 
 	wasmlib.ScExportsExport(&exportMap)
-}
-
-type AddMaterialContext struct {
-	Events  circularityEvents
-	Params  ImmutableAddMaterialParams
-	State   MutablecircularityState
-}
-
-func funcAddMaterialThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("circularity.funcAddMaterial")
-	f := &AddMaterialContext{
-		Params: ImmutableAddMaterialParams{
-			proxy: wasmlib.NewParamsProxy(),
-		},
-		State: MutablecircularityState{
-			proxy: wasmlib.NewStateProxy(),
-		},
-	}
-	ctx.Require(f.Params.Id().Exists(), "missing mandatory id")
-	ctx.Require(f.Params.Mat().Exists(), "missing mandatory mat")
-	ctx.Require(f.Params.Prop().Exists(), "missing mandatory prop")
-	funcAddMaterial(ctx, f)
-	ctx.Log("circularity.funcAddMaterial ok")
 }
 
 type AddPPToFractionContext struct {
@@ -128,6 +103,7 @@ func funcCreateFractionThunk(ctx wasmlib.ScFuncContext) {
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
+	ctx.Require(f.Params.Purpose().Exists(), "missing mandatory purpose")
 	funcCreateFraction(ctx, f)
 	ctx.Results(results)
 	ctx.Log("circularity.funcCreateFraction ok")
@@ -155,6 +131,7 @@ func funcCreatePPThunk(ctx wasmlib.ScFuncContext) {
 		},
 	}
 	ctx.Require(f.Params.Name().Exists(), "missing mandatory name")
+	ctx.Require(f.Params.Purpose().Exists(), "missing mandatory purpose")
 	funcCreatePP(ctx, f)
 	ctx.Results(results)
 	ctx.Log("circularity.funcCreatePP ok")
@@ -207,16 +184,16 @@ func funcInitThunk(ctx wasmlib.ScFuncContext) {
 	ctx.Log("circularity.funcInit ok")
 }
 
-type PayoutFracContext struct {
+type PayoutProducerContext struct {
 	Events  circularityEvents
-	Params  ImmutablePayoutFracParams
+	Params  ImmutablePayoutProducerParams
 	State   MutablecircularityState
 }
 
-func funcPayoutFracThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("circularity.funcPayoutFrac")
-	f := &PayoutFracContext{
-		Params: ImmutablePayoutFracParams{
+func funcPayoutProducerThunk(ctx wasmlib.ScFuncContext) {
+	ctx.Log("circularity.funcPayoutProducer")
+	f := &PayoutProducerContext{
+		Params: ImmutablePayoutProducerParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
 		State: MutablecircularityState{
@@ -224,8 +201,8 @@ func funcPayoutFracThunk(ctx wasmlib.ScFuncContext) {
 		},
 	}
 	ctx.Require(f.Params.FracID().Exists(), "missing mandatory fracID")
-	funcPayoutFrac(ctx, f)
-	ctx.Log("circularity.funcPayoutFrac ok")
+	funcPayoutProducer(ctx, f)
+	ctx.Log("circularity.funcPayoutProducer ok")
 }
 
 type SetMaterialsContext struct {

@@ -17,7 +17,6 @@ pub fn func_init(ctx: &ScFuncContext, f: &InitContext) {
     f.state.owner().set_value(&ctx.contract_creator());
     f.state.share_recycler().set_value(75);
     f.state.price_per_mg().set_value(2); //assuming 1€ per MIOTA: 2 Iota per miligramm result in 2 cent per 10 gramms of weight
-    f.state.last_payout().set_value(ctx.timestamp() / NANO_TIME_DIVIDER);
 }
 
 pub fn func_set_owner(ctx: &ScFuncContext, f: &SetOwnerContext) {
@@ -31,9 +30,8 @@ pub fn view_get_owner(ctx: &ScViewContext, f: &GetOwnerContext) {
 pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
     let pps: MapHashToMutableProductPass = f.state.productpasses();
     
-    //let ppsIndex: i32 = pps.length();
-
     let id = create_random_hash(ctx);
+
     //check if ID is already in Array;
     if pps.get_product_pass(&id).exists() {
            ctx.panic("id already exist");
@@ -41,31 +39,44 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
     let did: String = "did:iota:".to_owned() + &id.to_string();
     let name: String = f.params.name().value();
     let issuer: ScAgentID = ctx.caller();
-    let amount: u64 = ctx.incoming().balance(&ScColor::IOTA);
-    
     let version: u8 = 1;               //TEST IMPLEMENTATION - ADD as Parameter in create func like: f.params.version().value();
-    let decFood: bool = true;          //TEST IMPLEMENTATION - ADD as Parameter in create func
-    let decHygiene: bool = true;       //TEST IMPLEMENTATION - ADD as Parameter in create func
+    let purpose: String = f.params.purpose().value();
     let chargeWeight: u64 = 1000000000; // in miligramm
     let packageWeight: u64 = 2000;  // in miligramm
-    
+    let totalPackages: u64 = chargeWeight / packageWeight;
+    let amountPerCharge: u64 = ctx.incoming().balance(&ScColor::IOTA);
+    let amountPerPackage: u64 = amountPerCharge * packageWeight / chargeWeight;
+    let tokenProducer: u64 = amountPerCharge * ((100 - f.state.share_recycler().value()) / 100) as u64;
+    let tokenRecycler: u64 = amountPerCharge * f.state.share_recycler().value() as u64 / 100;
+    let packagesSorted: u64 = 0;
+    let packagesAlreadyPaid = 0;
+    let lastPayout = ctx.timestamp() / NANO_TIME_DIVIDER;
+
+
     let ppNew = ProductPass{
         id: id,
         did: did,
         name: name,
         issuer: issuer,
-        amount: amount,
         version: version,
-        dec_food: decFood,
-        dec_hygiene: decHygiene,
+        purpose: purpose,
         charge_weight: chargeWeight, // in miligramm
-        package_weight: packageWeight //in miligramm
+        package_weight: packageWeight, //in miligramm
+        total_packages: totalPackages,
+        packages_sorted: packagesSorted,
+        packages_already_paid: packagesAlreadyPaid,
+        amount_per_charge: amountPerCharge,
+        amount_per_package: amountPerPackage,
+        token_producer: tokenProducer,
+        token_recycler: tokenRecycler,
+        last_producer_payout: lastPayout
+
     };
     
     let requiredToken = &ppNew.charge_weight * f.state.price_per_mg().value();
-    if &ppNew.amount < &requiredToken {
+    if &ppNew.amount_per_charge < &requiredToken {
         ctx.panic(&format!("Charge does not provide sufficient token. '{tokens}'are required", tokens=requiredToken.to_string()));
-        }
+    }
     
     //let share_recycler = f.state.share_recycler().value() as i64;
     f.state.productpasses().get_product_pass(&ppNew.id).set_value(&ppNew);
@@ -104,25 +115,6 @@ pub fn view_get_token_per_package(ctx: &ScViewContext, f: &GetTokenPerPackageCon
 }
 
 
-pub fn func_add_material(ctx: &ScFuncContext, f: &AddMaterialContext) {
-    
-    let id = f.params.id().value();
-    let material: String = f.params.mat().value();
-    let proportion: u8 = f.params.prop().value();  //CAUTION: Given in per mil!!! so div by 1000
-    
-    let newComp = Composition{
-        material: material,
-        proportion: proportion
-    };
-    
-    let the_composition = f.state.compositions().get_compositions(&id);
-    let index = the_composition.length();
-    
-    the_composition.get_composition(index).set_value(&newComp);
-    ctx.log("material added");
-}
-
-
 pub fn view_get_materials(ctx: &ScViewContext, f: &GetMaterialsContext) {
     let id = f.params.id().value();
     
@@ -135,7 +127,7 @@ pub fn view_get_materials(ctx: &ScViewContext, f: &GetMaterialsContext) {
     
 }
 
-//resets the material composition
+//resets the material composition of a package charge
 pub fn func_set_materials(ctx: &ScFuncContext, f: &SetMaterialsContext) {
     
     let id = f.params.id().value();
@@ -146,38 +138,40 @@ pub fn func_set_materials(ctx: &ScFuncContext, f: &SetMaterialsContext) {
     composition.clear();
     
     for i in 0 .. newComp.length() {
-        composition.get_composition(i).set_value(&newComp.get_composition(i).value());
+        composition.append_composition().set_value(&newComp.get_composition(i).value());
     }
 
 }
 
 pub fn func_create_fraction(ctx: &ScFuncContext, f: &CreateFractionContext) {
     
+    let purpose: String = f.params.purpose().value();
+
     let fracID = create_random_hash(ctx);
     let did: String = "did:iota:".to_owned() + &"frac".to_owned() + &fracID.to_string();
     let name = f.params.name().value();
-    let decFood = true;                  //When any product is included without food declaration, the fraction will loose its food suitability 
-    let decHygiene = true;               //When any product is included without hygiene declaration, the fraction will loose its hygiene suitability 
+    let purpose: String = f.params.purpose().value();
     let issuer: ScAgentID = ctx.caller();    
     
     let newFrac = Fraction {
         frac_id: fracID,
         did: did,
         name: name,
-        dec_food: decFood,
-        dec_hygiene: decHygiene,
+        purpose: purpose,
         issuer: issuer,
         amount: 0
     };
     
     f.state.fractions().get_fraction(&newFrac.frac_id).set_value(&newFrac);
     
+    /* not needed probably
     let newFracComp = FracComposition {
         material: "init".to_string(),
         weight: 0
         };
     
     f.state.frac_compositions().get_frac_compositions(&newFrac.frac_id).get_frac_composition(0).set_value(&newFracComp);
+    */
     f.results.frac_id().set_value(&newFrac.frac_id); 			
 }
 
@@ -185,10 +179,13 @@ pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) 
     
     let ppID = f.params.pp_id().value();
     let fracID = f.params.frac_id().value();
-    let pp: ProductPass = f.state.productpasses().get_product_pass(&ppID).value();
+    let pp_proxy = f.state.productpasses().get_product_pass(&ppID);
+    let pp: ProductPass = pp_proxy.value();
     let ppComp = f.state.compositions().get_compositions(&ppID);
     let fracComp = f.state.frac_compositions().get_frac_compositions(&fracID);
+    let frac = f.state.fractions().get_fraction(&fracID);
     
+
     for i in 0..ppComp.length() {
     
         let mut foundMat: bool = false;
@@ -215,30 +212,27 @@ pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) 
                 weight: wei
             };
             
-            fracComp.get_frac_composition(index).set_value(&newMat);
+            fracComp.append_frac_composition().set_value(&newMat);
             }
         }
         
     }
     
-    f.state.fractions().get_fraction(&fracID).value().amount += &pp.amount;
-    
-    let share_producer = (100 - f.state.share_recycler().value()) as u64;
-    let frac_payouts_to_producers = f.state.payoffs_frac().get_frac_payoffs(&fracID);
-    
-    let producerBalance = frac_payouts_to_producers.get_uint64(&pp.issuer);
-    if producerBalance.exists() {
-        producerBalance.set_value(producerBalance.value() + pp.amount as u64 * share_producer);
+    //organize money distribution
+    //note that a package has been sorted to a fraction with the same purpose, that is basis for releasing funds for the packaging producer
+    if pp.purpose == frac.value().purpose {
+        pp_proxy.value().packages_sorted = &pp.packages_sorted +1;
     }
-    
-    else {
-        producerBalance.set_value(pp.amount as u64 * share_producer);
-        let keys = f.state.payoff_keys_frac().get_frac_payoff_keys(&fracID);
-        keys.get_agent_id(keys.length()).set_value(&pp.issuer);
+    else {          //currently sets the fraction unsuitable for food applications if one packaging added is not suitable for food
+        frac.value().purpose = "false".to_string();
     }
-    //remove pp (if not possible set amount to 0)
-    //f.state.productpasses().get_product_pass(&ppID).delete();
-    //f.state.compositions().get_compositions(&ppID).remove();
+
+    f.state.fractions().get_fraction(&fracID).value().amount += &pp.amount_per_package * f.state.share_recycler().value() as u64 / 100;
+    
+
+    //remove pp
+    f.state.productpasses().get_product_pass(&ppID).delete();
+    f.state.compositions().get_compositions(&ppID).clear();      //probably not functional right now
 }
 
 pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
@@ -249,8 +243,7 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
     let recyclateID = create_random_hash(ctx);    
     let did: String = "did:iota:".to_owned() + &"recy".to_owned() + &recyclateID.to_string();
     let name = f.params.name().value();
-    let decFood = fraction.dec_food;                  //When any product is included without food declaration, the fraction will loose its food suitability 
-    let decHygiene = fraction.dec_hygiene;               //When any product is included without hygiene declaration, the fraction will loose its hygiene suitability 
+    let purpose = fraction.purpose;
     let issuer: ScAgentID = ctx.caller();    
     let amount: u64 = fraction.amount;
     
@@ -258,14 +251,14 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
         recy_id: recyclateID,
         did: did,
         name: name,
-        dec_food: decFood,
-        dec_hygiene: decHygiene,
+        purpose: purpose,
         issuer: issuer,
         amount: amount,
         frac_id: fracID
     };
     
-    f.state.recyclates().get_recyclate(&newRecy.recy_id).set_value(&newRecy);
+    let recyclates_proxy = f.state.recyclates();
+    recyclates_proxy.get_recyclate(&newRecy.recy_id).set_value(&newRecy);
     
     let newRecyCompProxy = f.state.recy_compositions().get_recy_compositions(&newRecy.recy_id);
     let fracComp: ArrayOfMutableFracComposition = f.state.frac_compositions().get_frac_compositions(&newRecy.frac_id);
@@ -280,12 +273,34 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
             material: mat,
             weight: wei
         };
-        newRecyCompProxy.get_recy_composition(i).set_value(&	recyComp);
+        newRecyCompProxy.get_recy_composition(i).set_value(&recyComp);
     }
     
+    //manage payouts
+    if newRecy.amount > 0 {
+        let mut address: ScAgentID;
+        
+        //only if the fraction is usable for the same purpose as the included packagings the money goes to the recycler, otherwise to a non profit address
+        if newRecy.purpose != "false" {
+            address = newRecy.issuer;
+        }
+        else {
+            address = f.state.donation_address().value();
+        }
+
+        let payout = newRecy.amount;
+
+        let transfers: ScTransfers = ScTransfers::iotas(payout);
+        ctx.transfer_to_address(&address.address(), transfers);
+        recyclates_proxy.get_recyclate(&newRecy.recy_id).value().amount = 0;
+    }
+
+
+    f.state.fractions().get_fraction(&newRecy.frac_id).delete();
+    f.state.frac_compositions().get_frac_compositions(&newRecy.frac_id).clear();
+
     f.results.recyclate_id().set_value(&newRecy.recy_id);
-    
-    //set amount of fraction to 0
+
 }
 
 
@@ -296,6 +311,7 @@ fn create_random_hash(ctx: &ScFuncContext) -> ScHash {
 
     return random_hash;
 }
+
 
 /*
 pub fn func_payout(ctx: &ScFuncContext, f: &PayoutContext) {
@@ -317,6 +333,8 @@ pub fn func_payout(ctx: &ScFuncContext, f: &PayoutContext) {
 }
 */
 
+//wird nicht mehr gebraucht
+/*
 pub fn func_payout_frac(ctx: &ScFuncContext, f: &PayoutFracContext) {
     
     let lastpayout = f.state.last_payout();
@@ -344,6 +362,36 @@ pub fn func_payout_frac(ctx: &ScFuncContext, f: &PayoutFracContext) {
         payoffs_proxy.clear();
         lastpayout.set_value(currentTime);
     }
+    else {
+        ctx.panic("Functions can only be called once every 24 hours.");
+
+    }
+
+}*/
+
+pub fn func_payout_producer(ctx: &ScFuncContext, f: &PayoutProducerContext) {
+
+
+    let ppID = f.params.frac_id().value();
+    let pp_proxy = f.state.productpasses().get_product_pass(&ppID);
+    let pp_value = pp_proxy.value();
+
+    let lastpayout = pp_value.last_producer_payout;
+    let currentTime: u64 = ctx.timestamp() / NANO_TIME_DIVIDER;    
+
+    //can be called only once per day (every 86400 seconds)
+    if lastpayout + 86400 < currentTime && pp_value.packages_sorted > pp_value.packages_already_paid {
+        let address: ScAgentID = pp_value.issuer;
+        let payout = pp_value.token_producer * (&pp_value.packages_sorted - &pp_value.packages_already_paid);
+    
+        pp_proxy.value().packages_already_paid = pp_value.packages_sorted;
+    
+        let transfers: ScTransfers = ScTransfers::iotas(payout);
+        ctx.transfer_to_address(&address.address(), transfers);
+        pp_proxy.value().last_producer_payout = currentTime;
+    }
+    else {
+        ctx.panic("Functions can only be called once every 24 hours.");
+    }
 
 }
-

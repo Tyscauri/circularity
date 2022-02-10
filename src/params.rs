@@ -12,44 +12,6 @@ use wasmlib::*;
 use crate::*;
 
 #[derive(Clone)]
-pub struct ImmutableAddMaterialParams {
-	pub(crate) proxy: Proxy,
-}
-
-impl ImmutableAddMaterialParams {
-    pub fn id(&self) -> ScImmutableHash {
-		ScImmutableHash::new(self.proxy.root(PARAM_ID))
-	}
-
-    pub fn mat(&self) -> ScImmutableString {
-		ScImmutableString::new(self.proxy.root(PARAM_MAT))
-	}
-
-    pub fn prop(&self) -> ScImmutableUint8 {
-		ScImmutableUint8::new(self.proxy.root(PARAM_PROP))
-	}
-}
-
-#[derive(Clone)]
-pub struct MutableAddMaterialParams {
-	pub(crate) proxy: Proxy,
-}
-
-impl MutableAddMaterialParams {
-    pub fn id(&self) -> ScMutableHash {
-		ScMutableHash::new(self.proxy.root(PARAM_ID))
-	}
-
-    pub fn mat(&self) -> ScMutableString {
-		ScMutableString::new(self.proxy.root(PARAM_MAT))
-	}
-
-    pub fn prop(&self) -> ScMutableUint8 {
-		ScMutableUint8::new(self.proxy.root(PARAM_PROP))
-	}
-}
-
-#[derive(Clone)]
 pub struct ImmutableAddPPToFractionParams {
 	pub(crate) proxy: Proxy,
 }
@@ -88,6 +50,10 @@ impl ImmutableCreateFractionParams {
     pub fn name(&self) -> ScImmutableString {
 		ScImmutableString::new(self.proxy.root(PARAM_NAME))
 	}
+
+    pub fn purpose(&self) -> ScImmutableString {
+		ScImmutableString::new(self.proxy.root(PARAM_PURPOSE))
+	}
 }
 
 #[derive(Clone)]
@@ -98,6 +64,10 @@ pub struct MutableCreateFractionParams {
 impl MutableCreateFractionParams {
     pub fn name(&self) -> ScMutableString {
 		ScMutableString::new(self.proxy.root(PARAM_NAME))
+	}
+
+    pub fn purpose(&self) -> ScMutableString {
+		ScMutableString::new(self.proxy.root(PARAM_PURPOSE))
 	}
 }
 
@@ -110,6 +80,10 @@ impl ImmutableCreatePPParams {
     pub fn name(&self) -> ScImmutableString {
 		ScImmutableString::new(self.proxy.root(PARAM_NAME))
 	}
+
+    pub fn purpose(&self) -> ScImmutableString {
+		ScImmutableString::new(self.proxy.root(PARAM_PURPOSE))
+	}
 }
 
 #[derive(Clone)]
@@ -120,6 +94,10 @@ pub struct MutableCreatePPParams {
 impl MutableCreatePPParams {
     pub fn name(&self) -> ScMutableString {
 		ScMutableString::new(self.proxy.root(PARAM_NAME))
+	}
+
+    pub fn purpose(&self) -> ScMutableString {
+		ScMutableString::new(self.proxy.root(PARAM_PURPOSE))
 	}
 }
 
@@ -176,22 +154,22 @@ impl MutableInitParams {
 }
 
 #[derive(Clone)]
-pub struct ImmutablePayoutFracParams {
+pub struct ImmutablePayoutProducerParams {
 	pub(crate) proxy: Proxy,
 }
 
-impl ImmutablePayoutFracParams {
+impl ImmutablePayoutProducerParams {
     pub fn frac_id(&self) -> ScImmutableHash {
 		ScImmutableHash::new(self.proxy.root(PARAM_FRAC_ID))
 	}
 }
 
 #[derive(Clone)]
-pub struct MutablePayoutFracParams {
+pub struct MutablePayoutProducerParams {
 	pub(crate) proxy: Proxy,
 }
 
-impl MutablePayoutFracParams {
+impl MutablePayoutProducerParams {
     pub fn frac_id(&self) -> ScMutableHash {
 		ScMutableHash::new(self.proxy.root(PARAM_FRAC_ID))
 	}

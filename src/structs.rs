@@ -134,38 +134,35 @@ impl MutableFracComposition {
 
 #[derive(Clone)]
 pub struct Fraction {
-    pub amount      : u64, 
-    pub dec_food    : bool, 
-    pub dec_hygiene : bool, 
-    pub did         : String, 
-    pub frac_id     : ScHash, 
-    pub issuer      : ScAgentID, 
-    pub name        : String, 
+    pub amount  : u64, 
+    pub did     : String, 
+    pub frac_id : ScHash, 
+    pub issuer  : ScAgentID, 
+    pub name    : String, 
+    pub purpose : String, 
 }
 
 impl Fraction {
     pub fn from_bytes(bytes: &[u8]) -> Fraction {
         let mut dec = WasmDecoder::new(bytes);
         Fraction {
-            amount      : uint64_decode(&mut dec),
-            dec_food    : bool_decode(&mut dec),
-            dec_hygiene : bool_decode(&mut dec),
-            did         : string_decode(&mut dec),
-            frac_id     : hash_decode(&mut dec),
-            issuer      : agent_id_decode(&mut dec),
-            name        : string_decode(&mut dec),
+            amount  : uint64_decode(&mut dec),
+            did     : string_decode(&mut dec),
+            frac_id : hash_decode(&mut dec),
+            issuer  : agent_id_decode(&mut dec),
+            name    : string_decode(&mut dec),
+            purpose : string_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut enc = WasmEncoder::new();
 		uint64_encode(&mut enc, self.amount);
-		bool_encode(&mut enc, self.dec_food);
-		bool_encode(&mut enc, self.dec_hygiene);
 		string_encode(&mut enc, &self.did);
 		hash_encode(&mut enc, &self.frac_id);
 		agent_id_encode(&mut enc, &self.issuer);
 		string_encode(&mut enc, &self.name);
+		string_encode(&mut enc, &self.purpose);
         enc.buf()
     }
 }
@@ -210,46 +207,64 @@ impl MutableFraction {
 
 #[derive(Clone)]
 pub struct ProductPass {
-    pub amount         : u64, 
-    pub charge_weight  : u64, 
-    pub dec_food       : bool, 
-    pub dec_hygiene    : bool, 
-    pub did            : String,  //merged did:iota:id
-    pub id             : ScHash, 
-    pub issuer         : ScAgentID,  //packaging producer
-    pub name           : String, 
-    pub package_weight : u64, 
-    pub version        : u8, 
+    pub amount_per_charge     : u64, 
+    pub amount_per_package    : u64, 
+    pub charge_weight         : u64, 
+    pub did                   : String,  //merged did:iota:id
+    pub id                    : ScHash, 
+    pub issuer                : ScAgentID,  //packaging producer
+    pub last_producer_payout  : u64, 
+    pub name                  : String, 
+    pub package_weight        : u64, 
+    pub packages_already_paid : u64, 
+    pub packages_sorted       : u64, 
+    pub purpose               : String,  //e.g. food, hygiene, others
+    pub token_producer        : u64, 
+    pub token_recycler        : u64, 
+    pub total_packages        : u64, 
+    pub version               : u8, 
 }
 
 impl ProductPass {
     pub fn from_bytes(bytes: &[u8]) -> ProductPass {
         let mut dec = WasmDecoder::new(bytes);
         ProductPass {
-            amount         : uint64_decode(&mut dec),
-            charge_weight  : uint64_decode(&mut dec),
-            dec_food       : bool_decode(&mut dec),
-            dec_hygiene    : bool_decode(&mut dec),
-            did            : string_decode(&mut dec),
-            id             : hash_decode(&mut dec),
-            issuer         : agent_id_decode(&mut dec),
-            name           : string_decode(&mut dec),
-            package_weight : uint64_decode(&mut dec),
-            version        : uint8_decode(&mut dec),
+            amount_per_charge     : uint64_decode(&mut dec),
+            amount_per_package    : uint64_decode(&mut dec),
+            charge_weight         : uint64_decode(&mut dec),
+            did                   : string_decode(&mut dec),
+            id                    : hash_decode(&mut dec),
+            issuer                : agent_id_decode(&mut dec),
+            last_producer_payout  : uint64_decode(&mut dec),
+            name                  : string_decode(&mut dec),
+            package_weight        : uint64_decode(&mut dec),
+            packages_already_paid : uint64_decode(&mut dec),
+            packages_sorted       : uint64_decode(&mut dec),
+            purpose               : string_decode(&mut dec),
+            token_producer        : uint64_decode(&mut dec),
+            token_recycler        : uint64_decode(&mut dec),
+            total_packages        : uint64_decode(&mut dec),
+            version               : uint8_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut enc = WasmEncoder::new();
-		uint64_encode(&mut enc, self.amount);
+		uint64_encode(&mut enc, self.amount_per_charge);
+		uint64_encode(&mut enc, self.amount_per_package);
 		uint64_encode(&mut enc, self.charge_weight);
-		bool_encode(&mut enc, self.dec_food);
-		bool_encode(&mut enc, self.dec_hygiene);
 		string_encode(&mut enc, &self.did);
 		hash_encode(&mut enc, &self.id);
 		agent_id_encode(&mut enc, &self.issuer);
+		uint64_encode(&mut enc, self.last_producer_payout);
 		string_encode(&mut enc, &self.name);
 		uint64_encode(&mut enc, self.package_weight);
+		uint64_encode(&mut enc, self.packages_already_paid);
+		uint64_encode(&mut enc, self.packages_sorted);
+		string_encode(&mut enc, &self.purpose);
+		uint64_encode(&mut enc, self.token_producer);
+		uint64_encode(&mut enc, self.token_recycler);
+		uint64_encode(&mut enc, self.total_packages);
 		uint8_encode(&mut enc, self.version);
         enc.buf()
     }
@@ -356,40 +371,37 @@ impl MutableRecyComposition {
 
 #[derive(Clone)]
 pub struct Recyclate {
-    pub amount      : u64, 
-    pub dec_food    : bool, 
-    pub dec_hygiene : bool, 
-    pub did         : String, 
-    pub frac_id     : ScHash, 
-    pub issuer      : ScAgentID, 
-    pub name        : String, 
-    pub recy_id     : ScHash, 
+    pub amount  : u64, 
+    pub did     : String, 
+    pub frac_id : ScHash, 
+    pub issuer  : ScAgentID, 
+    pub name    : String, 
+    pub purpose : String, 
+    pub recy_id : ScHash, 
 }
 
 impl Recyclate {
     pub fn from_bytes(bytes: &[u8]) -> Recyclate {
         let mut dec = WasmDecoder::new(bytes);
         Recyclate {
-            amount      : uint64_decode(&mut dec),
-            dec_food    : bool_decode(&mut dec),
-            dec_hygiene : bool_decode(&mut dec),
-            did         : string_decode(&mut dec),
-            frac_id     : hash_decode(&mut dec),
-            issuer      : agent_id_decode(&mut dec),
-            name        : string_decode(&mut dec),
-            recy_id     : hash_decode(&mut dec),
+            amount  : uint64_decode(&mut dec),
+            did     : string_decode(&mut dec),
+            frac_id : hash_decode(&mut dec),
+            issuer  : agent_id_decode(&mut dec),
+            name    : string_decode(&mut dec),
+            purpose : string_decode(&mut dec),
+            recy_id : hash_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut enc = WasmEncoder::new();
 		uint64_encode(&mut enc, self.amount);
-		bool_encode(&mut enc, self.dec_food);
-		bool_encode(&mut enc, self.dec_hygiene);
 		string_encode(&mut enc, &self.did);
 		hash_encode(&mut enc, &self.frac_id);
 		agent_id_encode(&mut enc, &self.issuer);
 		string_encode(&mut enc, &self.name);
+		string_encode(&mut enc, &self.purpose);
 		hash_encode(&mut enc, &self.recy_id);
         enc.buf()
     }

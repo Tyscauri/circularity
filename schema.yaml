@@ -8,12 +8,18 @@ structs:
     did: String //merged did:iota:id
     name: String
     issuer: AgentID //packaging producer
-    amount: Uint64
     version: Uint8
-    decFood: Bool
-    decHygiene: Bool
+    purpose: String    //e.g. food, hygiene, others
     chargeWeight: Uint64
     packageWeight: Uint64
+    totalPackages: Uint64
+    packagesSorted: Uint64
+    packagesAlreadyPaid: Uint64
+    amountPerCharge: Uint64
+    amountPerPackage: Uint64
+    tokenProducer: Uint64
+    tokenRecycler: Uint64
+    lastProducerPayout: Uint64
   Composition:
     material: String
     proportion: Uint8
@@ -21,8 +27,7 @@ structs:
     fracId: Hash
     did: String
     name: String
-    decFood: Bool
-    decHygiene: Bool
+    purpose: String
     issuer: AgentID
     amount: Uint64
   FracComposition:
@@ -32,8 +37,7 @@ structs:
     recyId: Hash
     did: String
     name: String
-    decFood: Bool
-    decHygiene: Bool
+    purpose: String
     issuer: AgentID
     amount: Uint64
     fracId: Hash
@@ -43,8 +47,6 @@ structs:
 typedefs:
   Compositions: Composition[]
   FracCompositions: FracComposition[]
-  FracPayoffKeys: AgentID[]
-  FracPayoffs: map[AgentID]Uint64
   RecyCompositions: RecyComposition[]
 state:
   owner: AgentID // current owner of this smart contract
@@ -56,9 +58,7 @@ state:
   fracCompositions: map[Hash]FracCompositions
   recyclates: map[Hash]Recyclate
   recyCompositions: map[Hash]RecyCompositions
-  payoffsFrac: map[Hash]FracPayoffs
-  payoffKeysFrac: map[Hash]FracPayoffKeys
-  lastPayout: Uint64
+  donationAddress: AgentID
 funcs:
   init:
     params:
@@ -66,13 +66,9 @@ funcs:
   createPP:
     params: 
       name: String
+      purpose: String
     results:
       id: Hash
-  addMaterial:
-    params:
-      id: Hash
-      mat: String
-      prop: Uint8
   setMaterials:
     params:
       id: Hash
@@ -84,6 +80,7 @@ funcs:
   createFraction:
     params:
       name: String?
+      purpose: String
     results:
       fracID: Hash
   addPPToFraction:
@@ -100,7 +97,7 @@ funcs:
     results:
       fraction: Fraction
       recyclateID: Hash
-  payoutFrac:
+  payoutProducer:
     params:
       fracID: Hash
 views:

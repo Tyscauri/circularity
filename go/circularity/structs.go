@@ -116,25 +116,23 @@ func (o MutableFracComposition) Value() *FracComposition {
 }
 
 type Fraction struct {
-	Amount     uint64 
-	DecFood    bool 
-	DecHygiene bool 
-	Did        string 
-	FracId     wasmtypes.ScHash 
-	Issuer     wasmtypes.ScAgentID 
-	Name       string 
+	Amount  uint64 
+	Did     string 
+	FracId  wasmtypes.ScHash 
+	Issuer  wasmtypes.ScAgentID 
+	Name    string 
+	Purpose string 
 }
 
 func NewFractionFromBytes(buf []byte) *Fraction {
 	dec := wasmtypes.NewWasmDecoder(buf)
 	data := &Fraction{}
-	data.Amount     = wasmtypes.Uint64Decode(dec)
-	data.DecFood    = wasmtypes.BoolDecode(dec)
-	data.DecHygiene = wasmtypes.BoolDecode(dec)
-	data.Did        = wasmtypes.StringDecode(dec)
-	data.FracId     = wasmtypes.HashDecode(dec)
-	data.Issuer     = wasmtypes.AgentIDDecode(dec)
-	data.Name       = wasmtypes.StringDecode(dec)
+	data.Amount  = wasmtypes.Uint64Decode(dec)
+	data.Did     = wasmtypes.StringDecode(dec)
+	data.FracId  = wasmtypes.HashDecode(dec)
+	data.Issuer  = wasmtypes.AgentIDDecode(dec)
+	data.Name    = wasmtypes.StringDecode(dec)
+	data.Purpose = wasmtypes.StringDecode(dec)
 	dec.Close()
 	return data
 }
@@ -142,12 +140,11 @@ func NewFractionFromBytes(buf []byte) *Fraction {
 func (o *Fraction) Bytes() []byte {
 	enc := wasmtypes.NewWasmEncoder()
 		wasmtypes.Uint64Encode(enc, o.Amount)
-		wasmtypes.BoolEncode(enc, o.DecFood)
-		wasmtypes.BoolEncode(enc, o.DecHygiene)
 		wasmtypes.StringEncode(enc, o.Did)
 		wasmtypes.HashEncode(enc, o.FracId)
 		wasmtypes.AgentIDEncode(enc, o.Issuer)
 		wasmtypes.StringEncode(enc, o.Name)
+		wasmtypes.StringEncode(enc, o.Purpose)
 	return enc.Buf()
 }
 
@@ -184,46 +181,64 @@ func (o MutableFraction) Value() *Fraction {
 }
 
 type ProductPass struct {
-	Amount        uint64 
-	ChargeWeight  uint64 
-	DecFood       bool 
-	DecHygiene    bool 
-	Did           string  //merged did:iota:id
-	Id            wasmtypes.ScHash 
-	Issuer        wasmtypes.ScAgentID  //packaging producer
-	Name          string 
-	PackageWeight uint64 
-	Version       uint8 
+	AmountPerCharge     uint64 
+	AmountPerPackage    uint64 
+	ChargeWeight        uint64 
+	Did                 string  //merged did:iota:id
+	Id                  wasmtypes.ScHash 
+	Issuer              wasmtypes.ScAgentID  //packaging producer
+	LastProducerPayout  uint64 
+	Name                string 
+	PackageWeight       uint64 
+	PackagesAlreadyPaid uint64 
+	PackagesSorted      uint64 
+	Purpose             string  //e.g. food, hygiene, others
+	TokenProducer       uint64 
+	TokenRecycler       uint64 
+	TotalPackages       uint64 
+	Version             uint8 
 }
 
 func NewProductPassFromBytes(buf []byte) *ProductPass {
 	dec := wasmtypes.NewWasmDecoder(buf)
 	data := &ProductPass{}
-	data.Amount        = wasmtypes.Uint64Decode(dec)
-	data.ChargeWeight  = wasmtypes.Uint64Decode(dec)
-	data.DecFood       = wasmtypes.BoolDecode(dec)
-	data.DecHygiene    = wasmtypes.BoolDecode(dec)
-	data.Did           = wasmtypes.StringDecode(dec)
-	data.Id            = wasmtypes.HashDecode(dec)
-	data.Issuer        = wasmtypes.AgentIDDecode(dec)
-	data.Name          = wasmtypes.StringDecode(dec)
-	data.PackageWeight = wasmtypes.Uint64Decode(dec)
-	data.Version       = wasmtypes.Uint8Decode(dec)
+	data.AmountPerCharge     = wasmtypes.Uint64Decode(dec)
+	data.AmountPerPackage    = wasmtypes.Uint64Decode(dec)
+	data.ChargeWeight        = wasmtypes.Uint64Decode(dec)
+	data.Did                 = wasmtypes.StringDecode(dec)
+	data.Id                  = wasmtypes.HashDecode(dec)
+	data.Issuer              = wasmtypes.AgentIDDecode(dec)
+	data.LastProducerPayout  = wasmtypes.Uint64Decode(dec)
+	data.Name                = wasmtypes.StringDecode(dec)
+	data.PackageWeight       = wasmtypes.Uint64Decode(dec)
+	data.PackagesAlreadyPaid = wasmtypes.Uint64Decode(dec)
+	data.PackagesSorted      = wasmtypes.Uint64Decode(dec)
+	data.Purpose             = wasmtypes.StringDecode(dec)
+	data.TokenProducer       = wasmtypes.Uint64Decode(dec)
+	data.TokenRecycler       = wasmtypes.Uint64Decode(dec)
+	data.TotalPackages       = wasmtypes.Uint64Decode(dec)
+	data.Version             = wasmtypes.Uint8Decode(dec)
 	dec.Close()
 	return data
 }
 
 func (o *ProductPass) Bytes() []byte {
 	enc := wasmtypes.NewWasmEncoder()
-		wasmtypes.Uint64Encode(enc, o.Amount)
+		wasmtypes.Uint64Encode(enc, o.AmountPerCharge)
+		wasmtypes.Uint64Encode(enc, o.AmountPerPackage)
 		wasmtypes.Uint64Encode(enc, o.ChargeWeight)
-		wasmtypes.BoolEncode(enc, o.DecFood)
-		wasmtypes.BoolEncode(enc, o.DecHygiene)
 		wasmtypes.StringEncode(enc, o.Did)
 		wasmtypes.HashEncode(enc, o.Id)
 		wasmtypes.AgentIDEncode(enc, o.Issuer)
+		wasmtypes.Uint64Encode(enc, o.LastProducerPayout)
 		wasmtypes.StringEncode(enc, o.Name)
 		wasmtypes.Uint64Encode(enc, o.PackageWeight)
+		wasmtypes.Uint64Encode(enc, o.PackagesAlreadyPaid)
+		wasmtypes.Uint64Encode(enc, o.PackagesSorted)
+		wasmtypes.StringEncode(enc, o.Purpose)
+		wasmtypes.Uint64Encode(enc, o.TokenProducer)
+		wasmtypes.Uint64Encode(enc, o.TokenRecycler)
+		wasmtypes.Uint64Encode(enc, o.TotalPackages)
 		wasmtypes.Uint8Encode(enc, o.Version)
 	return enc.Buf()
 }
@@ -314,27 +329,25 @@ func (o MutableRecyComposition) Value() *RecyComposition {
 }
 
 type Recyclate struct {
-	Amount     uint64 
-	DecFood    bool 
-	DecHygiene bool 
-	Did        string 
-	FracId     wasmtypes.ScHash 
-	Issuer     wasmtypes.ScAgentID 
-	Name       string 
-	RecyId     wasmtypes.ScHash 
+	Amount  uint64 
+	Did     string 
+	FracId  wasmtypes.ScHash 
+	Issuer  wasmtypes.ScAgentID 
+	Name    string 
+	Purpose string 
+	RecyId  wasmtypes.ScHash 
 }
 
 func NewRecyclateFromBytes(buf []byte) *Recyclate {
 	dec := wasmtypes.NewWasmDecoder(buf)
 	data := &Recyclate{}
-	data.Amount     = wasmtypes.Uint64Decode(dec)
-	data.DecFood    = wasmtypes.BoolDecode(dec)
-	data.DecHygiene = wasmtypes.BoolDecode(dec)
-	data.Did        = wasmtypes.StringDecode(dec)
-	data.FracId     = wasmtypes.HashDecode(dec)
-	data.Issuer     = wasmtypes.AgentIDDecode(dec)
-	data.Name       = wasmtypes.StringDecode(dec)
-	data.RecyId     = wasmtypes.HashDecode(dec)
+	data.Amount  = wasmtypes.Uint64Decode(dec)
+	data.Did     = wasmtypes.StringDecode(dec)
+	data.FracId  = wasmtypes.HashDecode(dec)
+	data.Issuer  = wasmtypes.AgentIDDecode(dec)
+	data.Name    = wasmtypes.StringDecode(dec)
+	data.Purpose = wasmtypes.StringDecode(dec)
+	data.RecyId  = wasmtypes.HashDecode(dec)
 	dec.Close()
 	return data
 }
@@ -342,12 +355,11 @@ func NewRecyclateFromBytes(buf []byte) *Recyclate {
 func (o *Recyclate) Bytes() []byte {
 	enc := wasmtypes.NewWasmEncoder()
 		wasmtypes.Uint64Encode(enc, o.Amount)
-		wasmtypes.BoolEncode(enc, o.DecFood)
-		wasmtypes.BoolEncode(enc, o.DecHygiene)
 		wasmtypes.StringEncode(enc, o.Did)
 		wasmtypes.HashEncode(enc, o.FracId)
 		wasmtypes.AgentIDEncode(enc, o.Issuer)
 		wasmtypes.StringEncode(enc, o.Name)
+		wasmtypes.StringEncode(enc, o.Purpose)
 		wasmtypes.HashEncode(enc, o.RecyId)
 	return enc.Buf()
 }

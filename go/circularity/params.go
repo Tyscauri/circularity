@@ -9,38 +9,6 @@ package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib/wasmtypes"
 
-type ImmutableAddMaterialParams struct {
-	proxy wasmtypes.Proxy
-}
-
-func (s ImmutableAddMaterialParams) Id() wasmtypes.ScImmutableHash {
-	return wasmtypes.NewScImmutableHash(s.proxy.Root(ParamId))
-}
-
-func (s ImmutableAddMaterialParams) Mat() wasmtypes.ScImmutableString {
-	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamMat))
-}
-
-func (s ImmutableAddMaterialParams) Prop() wasmtypes.ScImmutableUint8 {
-	return wasmtypes.NewScImmutableUint8(s.proxy.Root(ParamProp))
-}
-
-type MutableAddMaterialParams struct {
-	proxy wasmtypes.Proxy
-}
-
-func (s MutableAddMaterialParams) Id() wasmtypes.ScMutableHash {
-	return wasmtypes.NewScMutableHash(s.proxy.Root(ParamId))
-}
-
-func (s MutableAddMaterialParams) Mat() wasmtypes.ScMutableString {
-	return wasmtypes.NewScMutableString(s.proxy.Root(ParamMat))
-}
-
-func (s MutableAddMaterialParams) Prop() wasmtypes.ScMutableUint8 {
-	return wasmtypes.NewScMutableUint8(s.proxy.Root(ParamProp))
-}
-
 type ImmutableAddPPToFractionParams struct {
 	proxy wasmtypes.Proxy
 }
@@ -73,12 +41,20 @@ func (s ImmutableCreateFractionParams) Name() wasmtypes.ScImmutableString {
 	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamName))
 }
 
+func (s ImmutableCreateFractionParams) Purpose() wasmtypes.ScImmutableString {
+	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamPurpose))
+}
+
 type MutableCreateFractionParams struct {
 	proxy wasmtypes.Proxy
 }
 
 func (s MutableCreateFractionParams) Name() wasmtypes.ScMutableString {
 	return wasmtypes.NewScMutableString(s.proxy.Root(ParamName))
+}
+
+func (s MutableCreateFractionParams) Purpose() wasmtypes.ScMutableString {
+	return wasmtypes.NewScMutableString(s.proxy.Root(ParamPurpose))
 }
 
 type ImmutableCreatePPParams struct {
@@ -89,12 +65,20 @@ func (s ImmutableCreatePPParams) Name() wasmtypes.ScImmutableString {
 	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamName))
 }
 
+func (s ImmutableCreatePPParams) Purpose() wasmtypes.ScImmutableString {
+	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamPurpose))
+}
+
 type MutableCreatePPParams struct {
 	proxy wasmtypes.Proxy
 }
 
 func (s MutableCreatePPParams) Name() wasmtypes.ScMutableString {
 	return wasmtypes.NewScMutableString(s.proxy.Root(ParamName))
+}
+
+func (s MutableCreatePPParams) Purpose() wasmtypes.ScMutableString {
+	return wasmtypes.NewScMutableString(s.proxy.Root(ParamPurpose))
 }
 
 type ImmutableCreateRecyclateParams struct {
@@ -137,19 +121,19 @@ func (s MutableInitParams) Owner() wasmtypes.ScMutableAgentID {
 	return wasmtypes.NewScMutableAgentID(s.proxy.Root(ParamOwner))
 }
 
-type ImmutablePayoutFracParams struct {
+type ImmutablePayoutProducerParams struct {
 	proxy wasmtypes.Proxy
 }
 
-func (s ImmutablePayoutFracParams) FracID() wasmtypes.ScImmutableHash {
+func (s ImmutablePayoutProducerParams) FracID() wasmtypes.ScImmutableHash {
 	return wasmtypes.NewScImmutableHash(s.proxy.Root(ParamFracID))
 }
 
-type MutablePayoutFracParams struct {
+type MutablePayoutProducerParams struct {
 	proxy wasmtypes.Proxy
 }
 
-func (s MutablePayoutFracParams) FracID() wasmtypes.ScMutableHash {
+func (s MutablePayoutProducerParams) FracID() wasmtypes.ScMutableHash {
 	return wasmtypes.NewScMutableHash(s.proxy.Root(ParamFracID))
 }
 

@@ -81,66 +81,6 @@ func (a ArrayOfMutableFracComposition) GetFracComposition(index uint32) MutableF
 
 type MutableFracCompositions = ArrayOfMutableFracComposition
 
-type ArrayOfImmutableAgentID struct {
-	proxy wasmtypes.Proxy
-}
-
-func (a ArrayOfImmutableAgentID) Length() uint32 {
-	return a.proxy.Length()
-}
-
-func (a ArrayOfImmutableAgentID) GetAgentID(index uint32) wasmtypes.ScImmutableAgentID {
-	return wasmtypes.NewScImmutableAgentID(a.proxy.Index(index))
-}
-
-type ImmutableFracPayoffKeys = ArrayOfImmutableAgentID
-
-type ArrayOfMutableAgentID struct {
-	proxy wasmtypes.Proxy
-}
-
-func (a ArrayOfMutableAgentID) AppendAgentID() wasmtypes.ScMutableAgentID {
-	return wasmtypes.NewScMutableAgentID(a.proxy.Append())
-}
-
-func (a ArrayOfMutableAgentID) Clear() {
-	a.proxy.ClearArray()
-}
-
-func (a ArrayOfMutableAgentID) Length() uint32 {
-	return a.proxy.Length()
-}
-
-func (a ArrayOfMutableAgentID) GetAgentID(index uint32) wasmtypes.ScMutableAgentID {
-	return wasmtypes.NewScMutableAgentID(a.proxy.Index(index))
-}
-
-type MutableFracPayoffKeys = ArrayOfMutableAgentID
-
-type MapAgentIDToImmutableUint64 struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapAgentIDToImmutableUint64) GetUint64(key wasmtypes.ScAgentID) wasmtypes.ScImmutableUint64 {
-	return wasmtypes.NewScImmutableUint64(m.proxy.Key(wasmtypes.AgentIDToBytes(key)))
-}
-
-type ImmutableFracPayoffs = MapAgentIDToImmutableUint64
-
-type MapAgentIDToMutableUint64 struct {
-	proxy wasmtypes.Proxy
-}
-
-func (m MapAgentIDToMutableUint64) Clear() {
-	m.proxy.ClearMap()
-}
-
-func (m MapAgentIDToMutableUint64) GetUint64(key wasmtypes.ScAgentID) wasmtypes.ScMutableUint64 {
-	return wasmtypes.NewScMutableUint64(m.proxy.Key(wasmtypes.AgentIDToBytes(key)))
-}
-
-type MutableFracPayoffs = MapAgentIDToMutableUint64
-
 type ArrayOfImmutableRecyComposition struct {
 	proxy wasmtypes.Proxy
 }
