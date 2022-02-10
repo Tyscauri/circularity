@@ -10,13 +10,13 @@
 
 use wasmlib::*;
 
-pub struct test3Events {
+pub struct circularityEvents {
 }
 
-impl test3Events {
+impl circularityEvents {
 
 	pub fn payout(&self) {
-		let mut evt = EventEncoder::new("test3.payout");
+		let mut evt = EventEncoder::new("circularity.payout");
 		evt.emit();
 	}
 }

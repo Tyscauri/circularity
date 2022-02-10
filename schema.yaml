@@ -1,5 +1,5 @@
-name: test3
-description: test3 description
+name: circularity
+description: iota based circularity approach for plastic packaging, project former name was test3
 events:
   payout:
 structs:

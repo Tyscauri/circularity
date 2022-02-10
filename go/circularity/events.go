@@ -6,15 +6,15 @@
 // Change the json schema instead
 
 //nolint:gocritic
-package test3
+package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib"
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib/wasmtypes"
 
-type test3Events struct {
+type circularityEvents struct {
 }
 
-func (e test3Events) Payout() {
-	evt := wasmlib.NewEventEncoder("test3.payout")
+func (e circularityEvents) Payout() {
+	evt := wasmlib.NewEventEncoder("circularity.payout")
 	evt.Emit()
 }

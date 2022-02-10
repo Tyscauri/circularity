@@ -9,9 +9,9 @@
 
 use wasmlib::*;
 
-pub const SC_NAME        : &str = "test3";
-pub const SC_DESCRIPTION : &str = "test3 description";
-pub const HSC_NAME       : ScHname = ScHname(0x1ffeb901);
+pub const SC_NAME        : &str = "circularity";
+pub const SC_DESCRIPTION : &str = "iota based circularity approach for plastic packaging, project former name was test3";
+pub const HSC_NAME       : ScHname = ScHname(0x74fbdd8f);
 
 pub const PARAM_CHARGE_WEIGHT : &str = "chargeWeight";
 pub const PARAM_COMP          : &str = "comp";

@@ -101,11 +101,11 @@ impl MapHashToImmutableRecyclate {
 }
 
 #[derive(Clone)]
-pub struct Immutabletest3State {
+pub struct ImmutablecircularityState {
 	pub(crate) proxy: Proxy,
 }
 
-impl Immutabletest3State {
+impl ImmutablecircularityState {
     pub fn compositions(&self) -> MapHashToImmutableCompositions {
 		MapHashToImmutableCompositions { proxy: self.proxy.root(STATE_COMPOSITIONS) }
 	}
@@ -276,13 +276,13 @@ impl MapHashToMutableRecyclate {
 }
 
 #[derive(Clone)]
-pub struct Mutabletest3State {
+pub struct MutablecircularityState {
 	pub(crate) proxy: Proxy,
 }
 
-impl Mutabletest3State {
-    pub fn as_immutable(&self) -> Immutabletest3State {
-		Immutabletest3State { proxy: self.proxy.root("") }
+impl MutablecircularityState {
+    pub fn as_immutable(&self) -> ImmutablecircularityState {
+		ImmutablecircularityState { proxy: self.proxy.root("") }
 	}
 
     pub fn compositions(&self) -> MapHashToMutableCompositions {

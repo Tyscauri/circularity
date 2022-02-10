@@ -12,7 +12,7 @@ package main
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmvmhost"
 
-import "home/tim/Schreibtisch/circ_proto/test3/go/test3"
+import "home/tim/Schreibtisch/circ_proto/test3/go/circularity"
 
 func main() {
 }
@@ -23,10 +23,10 @@ func init() {
 
 //export on_call
 func onCall(index int32) {
-	test3.OnLoad(index)
+	circularity.OnLoad(index)
 }
 
 //export on_load
 func onLoad() {
-	test3.OnLoad(-1)
+	circularity.OnLoad(-1)
 }

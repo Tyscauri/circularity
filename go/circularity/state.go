@@ -5,7 +5,7 @@
 // >>>> DO NOT CHANGE THIS FILE! <<<<
 // Change the json schema instead
 
-package test3
+package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib/wasmtypes"
 
@@ -73,55 +73,55 @@ func (m MapHashToImmutableRecyclate) GetRecyclate(key wasmtypes.ScHash) Immutabl
 	return ImmutableRecyclate{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
 }
 
-type Immutabletest3State struct {
+type ImmutablecircularityState struct {
 	proxy wasmtypes.Proxy
 }
 
-func (s Immutabletest3State) Compositions() MapHashToImmutableCompositions {
+func (s ImmutablecircularityState) Compositions() MapHashToImmutableCompositions {
 	return MapHashToImmutableCompositions{proxy: s.proxy.Root(StateCompositions)}
 }
 
-func (s Immutabletest3State) FracCompositions() MapHashToImmutableFracCompositions {
+func (s ImmutablecircularityState) FracCompositions() MapHashToImmutableFracCompositions {
 	return MapHashToImmutableFracCompositions{proxy: s.proxy.Root(StateFracCompositions)}
 }
 
-func (s Immutabletest3State) Fractions() MapHashToImmutableFraction {
+func (s ImmutablecircularityState) Fractions() MapHashToImmutableFraction {
 	return MapHashToImmutableFraction{proxy: s.proxy.Root(StateFractions)}
 }
 
-func (s Immutabletest3State) LastPayout() wasmtypes.ScImmutableUint64 {
+func (s ImmutablecircularityState) LastPayout() wasmtypes.ScImmutableUint64 {
 	return wasmtypes.NewScImmutableUint64(s.proxy.Root(StateLastPayout))
 }
 
-func (s Immutabletest3State) Owner() wasmtypes.ScImmutableAgentID {
+func (s ImmutablecircularityState) Owner() wasmtypes.ScImmutableAgentID {
 	return wasmtypes.NewScImmutableAgentID(s.proxy.Root(StateOwner))
 }
 
-func (s Immutabletest3State) PayoffKeysFrac() MapHashToImmutableFracPayoffKeys {
+func (s ImmutablecircularityState) PayoffKeysFrac() MapHashToImmutableFracPayoffKeys {
 	return MapHashToImmutableFracPayoffKeys{proxy: s.proxy.Root(StatePayoffKeysFrac)}
 }
 
-func (s Immutabletest3State) PayoffsFrac() MapHashToImmutableFracPayoffs {
+func (s ImmutablecircularityState) PayoffsFrac() MapHashToImmutableFracPayoffs {
 	return MapHashToImmutableFracPayoffs{proxy: s.proxy.Root(StatePayoffsFrac)}
 }
 
-func (s Immutabletest3State) PricePerMg() wasmtypes.ScImmutableUint64 {
+func (s ImmutablecircularityState) PricePerMg() wasmtypes.ScImmutableUint64 {
 	return wasmtypes.NewScImmutableUint64(s.proxy.Root(StatePricePerMg))
 }
 
-func (s Immutabletest3State) Productpasses() MapHashToImmutableProductPass {
+func (s ImmutablecircularityState) Productpasses() MapHashToImmutableProductPass {
 	return MapHashToImmutableProductPass{proxy: s.proxy.Root(StateProductpasses)}
 }
 
-func (s Immutabletest3State) RecyCompositions() MapHashToImmutableRecyCompositions {
+func (s ImmutablecircularityState) RecyCompositions() MapHashToImmutableRecyCompositions {
 	return MapHashToImmutableRecyCompositions{proxy: s.proxy.Root(StateRecyCompositions)}
 }
 
-func (s Immutabletest3State) Recyclates() MapHashToImmutableRecyclate {
+func (s ImmutablecircularityState) Recyclates() MapHashToImmutableRecyclate {
 	return MapHashToImmutableRecyclate{proxy: s.proxy.Root(StateRecyclates)}
 }
 
-func (s Immutabletest3State) ShareRecycler() wasmtypes.ScImmutableUint8 {
+func (s ImmutablecircularityState) ShareRecycler() wasmtypes.ScImmutableUint8 {
 	return wasmtypes.NewScImmutableUint8(s.proxy.Root(StateShareRecycler))
 }
 
@@ -221,58 +221,58 @@ func (m MapHashToMutableRecyclate) GetRecyclate(key wasmtypes.ScHash) MutableRec
 	return MutableRecyclate{proxy: m.proxy.Key(wasmtypes.HashToBytes(key))}
 }
 
-type Mutabletest3State struct {
+type MutablecircularityState struct {
 	proxy wasmtypes.Proxy
 }
 
-func (s Mutabletest3State) AsImmutable() Immutabletest3State {
-	return Immutabletest3State(s)
+func (s MutablecircularityState) AsImmutable() ImmutablecircularityState {
+	return ImmutablecircularityState(s)
 }
 
-func (s Mutabletest3State) Compositions() MapHashToMutableCompositions {
+func (s MutablecircularityState) Compositions() MapHashToMutableCompositions {
 	return MapHashToMutableCompositions{proxy: s.proxy.Root(StateCompositions)}
 }
 
-func (s Mutabletest3State) FracCompositions() MapHashToMutableFracCompositions {
+func (s MutablecircularityState) FracCompositions() MapHashToMutableFracCompositions {
 	return MapHashToMutableFracCompositions{proxy: s.proxy.Root(StateFracCompositions)}
 }
 
-func (s Mutabletest3State) Fractions() MapHashToMutableFraction {
+func (s MutablecircularityState) Fractions() MapHashToMutableFraction {
 	return MapHashToMutableFraction{proxy: s.proxy.Root(StateFractions)}
 }
 
-func (s Mutabletest3State) LastPayout() wasmtypes.ScMutableUint64 {
+func (s MutablecircularityState) LastPayout() wasmtypes.ScMutableUint64 {
 	return wasmtypes.NewScMutableUint64(s.proxy.Root(StateLastPayout))
 }
 
-func (s Mutabletest3State) Owner() wasmtypes.ScMutableAgentID {
+func (s MutablecircularityState) Owner() wasmtypes.ScMutableAgentID {
 	return wasmtypes.NewScMutableAgentID(s.proxy.Root(StateOwner))
 }
 
-func (s Mutabletest3State) PayoffKeysFrac() MapHashToMutableFracPayoffKeys {
+func (s MutablecircularityState) PayoffKeysFrac() MapHashToMutableFracPayoffKeys {
 	return MapHashToMutableFracPayoffKeys{proxy: s.proxy.Root(StatePayoffKeysFrac)}
 }
 
-func (s Mutabletest3State) PayoffsFrac() MapHashToMutableFracPayoffs {
+func (s MutablecircularityState) PayoffsFrac() MapHashToMutableFracPayoffs {
 	return MapHashToMutableFracPayoffs{proxy: s.proxy.Root(StatePayoffsFrac)}
 }
 
-func (s Mutabletest3State) PricePerMg() wasmtypes.ScMutableUint64 {
+func (s MutablecircularityState) PricePerMg() wasmtypes.ScMutableUint64 {
 	return wasmtypes.NewScMutableUint64(s.proxy.Root(StatePricePerMg))
 }
 
-func (s Mutabletest3State) Productpasses() MapHashToMutableProductPass {
+func (s MutablecircularityState) Productpasses() MapHashToMutableProductPass {
 	return MapHashToMutableProductPass{proxy: s.proxy.Root(StateProductpasses)}
 }
 
-func (s Mutabletest3State) RecyCompositions() MapHashToMutableRecyCompositions {
+func (s MutablecircularityState) RecyCompositions() MapHashToMutableRecyCompositions {
 	return MapHashToMutableRecyCompositions{proxy: s.proxy.Root(StateRecyCompositions)}
 }
 
-func (s Mutabletest3State) Recyclates() MapHashToMutableRecyclate {
+func (s MutablecircularityState) Recyclates() MapHashToMutableRecyclate {
 	return MapHashToMutableRecyclate{proxy: s.proxy.Root(StateRecyclates)}
 }
 
-func (s Mutabletest3State) ShareRecycler() wasmtypes.ScMutableUint8 {
+func (s MutablecircularityState) ShareRecycler() wasmtypes.ScMutableUint8 {
 	return wasmtypes.NewScMutableUint8(s.proxy.Root(StateShareRecycler))
 }

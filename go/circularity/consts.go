@@ -5,14 +5,14 @@
 // >>>> DO NOT CHANGE THIS FILE! <<<<
 // Change the json schema instead
 
-package test3
+package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib/wasmtypes"
 
 const (
-	ScName        = "test3"
-	ScDescription = "test3 description"
-	HScName       = wasmtypes.ScHname(0x1ffeb901)
+	ScName        = "circularity"
+	ScDescription = "iota based circularity approach for plastic packaging, project former name was test3"
+	HScName       = wasmtypes.ScHname(0x74fbdd8f)
 )
 
 const (

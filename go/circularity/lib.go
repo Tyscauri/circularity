@@ -6,7 +6,7 @@
 // Change the json schema instead
 
 //nolint:dupl
-package test3
+package circularity
 
 import "github.com/iotaledger/wasp/packages/wasmvm/wasmlib/go/wasmlib"
 
@@ -57,18 +57,18 @@ func OnLoad(index int32) {
 }
 
 type AddMaterialContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableAddMaterialParams
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcAddMaterialThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcAddMaterial")
+	ctx.Log("circularity.funcAddMaterial")
 	f := &AddMaterialContext{
 		Params: ImmutableAddMaterialParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
@@ -76,18 +76,18 @@ func funcAddMaterialThunk(ctx wasmlib.ScFuncContext) {
 	ctx.Require(f.Params.Mat().Exists(), "missing mandatory mat")
 	ctx.Require(f.Params.Prop().Exists(), "missing mandatory prop")
 	funcAddMaterial(ctx, f)
-	ctx.Log("test3.funcAddMaterial ok")
+	ctx.Log("circularity.funcAddMaterial ok")
 }
 
 type AddPPToFractionContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableAddPPToFractionParams
 	Results MutableAddPPToFractionResults
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcAddPPToFractionThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcAddPPToFraction")
+	ctx.Log("circularity.funcAddPPToFraction")
 	results := wasmlib.NewScDict()
 	f := &AddPPToFractionContext{
 		Params: ImmutableAddPPToFractionParams{
@@ -96,7 +96,7 @@ func funcAddPPToFractionThunk(ctx wasmlib.ScFuncContext) {
 		Results: MutableAddPPToFractionResults{
 			proxy: results.AsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
@@ -104,18 +104,18 @@ func funcAddPPToFractionThunk(ctx wasmlib.ScFuncContext) {
 	ctx.Require(f.Params.PpID().Exists(), "missing mandatory ppID")
 	funcAddPPToFraction(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.funcAddPPToFraction ok")
+	ctx.Log("circularity.funcAddPPToFraction ok")
 }
 
 type CreateFractionContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableCreateFractionParams
 	Results MutableCreateFractionResults
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcCreateFractionThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcCreateFraction")
+	ctx.Log("circularity.funcCreateFraction")
 	results := wasmlib.NewScDict()
 	f := &CreateFractionContext{
 		Params: ImmutableCreateFractionParams{
@@ -124,24 +124,24 @@ func funcCreateFractionThunk(ctx wasmlib.ScFuncContext) {
 		Results: MutableCreateFractionResults{
 			proxy: results.AsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	funcCreateFraction(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.funcCreateFraction ok")
+	ctx.Log("circularity.funcCreateFraction ok")
 }
 
 type CreatePPContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableCreatePPParams
 	Results MutableCreatePPResults
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcCreatePPThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcCreatePP")
+	ctx.Log("circularity.funcCreatePP")
 	results := wasmlib.NewScDict()
 	f := &CreatePPContext{
 		Params: ImmutableCreatePPParams{
@@ -150,25 +150,25 @@ func funcCreatePPThunk(ctx wasmlib.ScFuncContext) {
 		Results: MutableCreatePPResults{
 			proxy: results.AsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.Name().Exists(), "missing mandatory name")
 	funcCreatePP(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.funcCreatePP ok")
+	ctx.Log("circularity.funcCreatePP ok")
 }
 
 type CreateRecyclateContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableCreateRecyclateParams
 	Results MutableCreateRecyclateResults
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcCreateRecyclateThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcCreateRecyclate")
+	ctx.Log("circularity.funcCreateRecyclate")
 	results := wasmlib.NewScDict()
 	f := &CreateRecyclateContext{
 		Params: ImmutableCreateRecyclateParams{
@@ -177,91 +177,91 @@ func funcCreateRecyclateThunk(ctx wasmlib.ScFuncContext) {
 		Results: MutableCreateRecyclateResults{
 			proxy: results.AsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.FracID().Exists(), "missing mandatory fracID")
 	funcCreateRecyclate(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.funcCreateRecyclate ok")
+	ctx.Log("circularity.funcCreateRecyclate ok")
 }
 
 type InitContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableInitParams
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcInitThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcInit")
+	ctx.Log("circularity.funcInit")
 	f := &InitContext{
 		Params: ImmutableInitParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	funcInit(ctx, f)
-	ctx.Log("test3.funcInit ok")
+	ctx.Log("circularity.funcInit ok")
 }
 
 type PayoutFracContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutablePayoutFracParams
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcPayoutFracThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcPayoutFrac")
+	ctx.Log("circularity.funcPayoutFrac")
 	f := &PayoutFracContext{
 		Params: ImmutablePayoutFracParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.FracID().Exists(), "missing mandatory fracID")
 	funcPayoutFrac(ctx, f)
-	ctx.Log("test3.funcPayoutFrac ok")
+	ctx.Log("circularity.funcPayoutFrac ok")
 }
 
 type SetMaterialsContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableSetMaterialsParams
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcSetMaterialsThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcSetMaterials")
+	ctx.Log("circularity.funcSetMaterials")
 	f := &SetMaterialsContext{
 		Params: ImmutableSetMaterialsParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.Id().Exists(), "missing mandatory id")
 	funcSetMaterials(ctx, f)
-	ctx.Log("test3.funcSetMaterials ok")
+	ctx.Log("circularity.funcSetMaterials ok")
 }
 
 type SetOwnerContext struct {
-	Events  test3Events
+	Events  circularityEvents
 	Params  ImmutableSetOwnerParams
-	State   Mutabletest3State
+	State   MutablecircularityState
 }
 
 func funcSetOwnerThunk(ctx wasmlib.ScFuncContext) {
-	ctx.Log("test3.funcSetOwner")
+	ctx.Log("circularity.funcSetOwner")
 	f := &SetOwnerContext{
 		Params: ImmutableSetOwnerParams{
 			proxy: wasmlib.NewParamsProxy(),
 		},
-		State: Mutabletest3State{
+		State: MutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
@@ -273,17 +273,17 @@ func funcSetOwnerThunk(ctx wasmlib.ScFuncContext) {
 
 	ctx.Require(f.Params.Owner().Exists(), "missing mandatory owner")
 	funcSetOwner(ctx, f)
-	ctx.Log("test3.funcSetOwner ok")
+	ctx.Log("circularity.funcSetOwner ok")
 }
 
 type GetAmountOfRequiredFundsContext struct {
 	Params  ImmutableGetAmountOfRequiredFundsParams
 	Results MutableGetAmountOfRequiredFundsResults
-	State   Immutabletest3State
+	State   ImmutablecircularityState
 }
 
 func viewGetAmountOfRequiredFundsThunk(ctx wasmlib.ScViewContext) {
-	ctx.Log("test3.viewGetAmountOfRequiredFunds")
+	ctx.Log("circularity.viewGetAmountOfRequiredFunds")
 	results := wasmlib.NewScDict()
 	f := &GetAmountOfRequiredFundsContext{
 		Params: ImmutableGetAmountOfRequiredFundsParams{
@@ -292,24 +292,24 @@ func viewGetAmountOfRequiredFundsThunk(ctx wasmlib.ScViewContext) {
 		Results: MutableGetAmountOfRequiredFundsResults{
 			proxy: results.AsProxy(),
 		},
-		State: Immutabletest3State{
+		State: ImmutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.ChargeWeight().Exists(), "missing mandatory chargeWeight")
 	viewGetAmountOfRequiredFunds(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.viewGetAmountOfRequiredFunds ok")
+	ctx.Log("circularity.viewGetAmountOfRequiredFunds ok")
 }
 
 type GetMaterialsContext struct {
 	Params  ImmutableGetMaterialsParams
 	Results MutableGetMaterialsResults
-	State   Immutabletest3State
+	State   ImmutablecircularityState
 }
 
 func viewGetMaterialsThunk(ctx wasmlib.ScViewContext) {
-	ctx.Log("test3.viewGetMaterials")
+	ctx.Log("circularity.viewGetMaterials")
 	results := wasmlib.NewScDict()
 	f := &GetMaterialsContext{
 		Params: ImmutableGetMaterialsParams{
@@ -318,45 +318,45 @@ func viewGetMaterialsThunk(ctx wasmlib.ScViewContext) {
 		Results: MutableGetMaterialsResults{
 			proxy: results.AsProxy(),
 		},
-		State: Immutabletest3State{
+		State: ImmutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.Id().Exists(), "missing mandatory id")
 	viewGetMaterials(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.viewGetMaterials ok")
+	ctx.Log("circularity.viewGetMaterials ok")
 }
 
 type GetOwnerContext struct {
 	Results MutableGetOwnerResults
-	State   Immutabletest3State
+	State   ImmutablecircularityState
 }
 
 func viewGetOwnerThunk(ctx wasmlib.ScViewContext) {
-	ctx.Log("test3.viewGetOwner")
+	ctx.Log("circularity.viewGetOwner")
 	results := wasmlib.NewScDict()
 	f := &GetOwnerContext{
 		Results: MutableGetOwnerResults{
 			proxy: results.AsProxy(),
 		},
-		State: Immutabletest3State{
+		State: ImmutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	viewGetOwner(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.viewGetOwner ok")
+	ctx.Log("circularity.viewGetOwner ok")
 }
 
 type GetPPContext struct {
 	Params  ImmutableGetPPParams
 	Results MutableGetPPResults
-	State   Immutabletest3State
+	State   ImmutablecircularityState
 }
 
 func viewGetPPThunk(ctx wasmlib.ScViewContext) {
-	ctx.Log("test3.viewGetPP")
+	ctx.Log("circularity.viewGetPP")
 	results := wasmlib.NewScDict()
 	f := &GetPPContext{
 		Params: ImmutableGetPPParams{
@@ -365,24 +365,24 @@ func viewGetPPThunk(ctx wasmlib.ScViewContext) {
 		Results: MutableGetPPResults{
 			proxy: results.AsProxy(),
 		},
-		State: Immutabletest3State{
+		State: ImmutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	ctx.Require(f.Params.Id().Exists(), "missing mandatory id")
 	viewGetPP(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.viewGetPP ok")
+	ctx.Log("circularity.viewGetPP ok")
 }
 
 type GetTokenPerPackageContext struct {
 	Params  ImmutableGetTokenPerPackageParams
 	Results MutableGetTokenPerPackageResults
-	State   Immutabletest3State
+	State   ImmutablecircularityState
 }
 
 func viewGetTokenPerPackageThunk(ctx wasmlib.ScViewContext) {
-	ctx.Log("test3.viewGetTokenPerPackage")
+	ctx.Log("circularity.viewGetTokenPerPackage")
 	results := wasmlib.NewScDict()
 	f := &GetTokenPerPackageContext{
 		Params: ImmutableGetTokenPerPackageParams{
@@ -391,11 +391,11 @@ func viewGetTokenPerPackageThunk(ctx wasmlib.ScViewContext) {
 		Results: MutableGetTokenPerPackageResults{
 			proxy: results.AsProxy(),
 		},
-		State: Immutabletest3State{
+		State: ImmutablecircularityState{
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
 	viewGetTokenPerPackage(ctx, f)
 	ctx.Results(results)
-	ctx.Log("test3.viewGetTokenPerPackage ok")
+	ctx.Log("circularity.viewGetTokenPerPackage ok")
 }

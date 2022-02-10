@@ -8,7 +8,7 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-use test3::*;
+use circularity::*;
 use wasmlib::*;
 
 use crate::consts::*;
@@ -28,7 +28,7 @@ mod state;
 mod structs;
 mod typedefs;
 
-mod test3;
+mod circularity;
 
 const EXPORT_MAP: ScExportMap = ScExportMap {
     names: &[
@@ -78,174 +78,174 @@ fn on_load() {
 }
 
 pub struct AddMaterialContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableAddMaterialParams,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_add_material_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcAddMaterial");
+	ctx.log("circularity.funcAddMaterial");
 	let f = AddMaterialContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableAddMaterialParams { proxy: params_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	ctx.require(f.params.mat().exists(), "missing mandatory mat");
 	ctx.require(f.params.prop().exists(), "missing mandatory prop");
 	func_add_material(ctx, &f);
-	ctx.log("test3.funcAddMaterial ok");
+	ctx.log("circularity.funcAddMaterial ok");
 }
 
 pub struct AddPPToFractionContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableAddPPToFractionParams,
 	results: MutableAddPPToFractionResults,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_add_pp_to_fraction_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcAddPPToFraction");
+	ctx.log("circularity.funcAddPPToFraction");
 	let f = AddPPToFractionContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableAddPPToFractionParams { proxy: params_proxy() },
 		results: MutableAddPPToFractionResults { proxy: results_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	ctx.require(f.params.pp_id().exists(), "missing mandatory ppID");
 	func_add_pp_to_fraction(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.funcAddPPToFraction ok");
+	ctx.log("circularity.funcAddPPToFraction ok");
 }
 
 pub struct CreateFractionContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableCreateFractionParams,
 	results: MutableCreateFractionResults,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_create_fraction_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcCreateFraction");
+	ctx.log("circularity.funcCreateFraction");
 	let f = CreateFractionContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableCreateFractionParams { proxy: params_proxy() },
 		results: MutableCreateFractionResults { proxy: results_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	func_create_fraction(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.funcCreateFraction ok");
+	ctx.log("circularity.funcCreateFraction ok");
 }
 
 pub struct CreatePPContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableCreatePPParams,
 	results: MutableCreatePPResults,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_create_pp_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcCreatePP");
+	ctx.log("circularity.funcCreatePP");
 	let f = CreatePPContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableCreatePPParams { proxy: params_proxy() },
 		results: MutableCreatePPResults { proxy: results_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.name().exists(), "missing mandatory name");
 	func_create_pp(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.funcCreatePP ok");
+	ctx.log("circularity.funcCreatePP ok");
 }
 
 pub struct CreateRecyclateContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableCreateRecyclateParams,
 	results: MutableCreateRecyclateResults,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_create_recyclate_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcCreateRecyclate");
+	ctx.log("circularity.funcCreateRecyclate");
 	let f = CreateRecyclateContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableCreateRecyclateParams { proxy: params_proxy() },
 		results: MutableCreateRecyclateResults { proxy: results_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	func_create_recyclate(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.funcCreateRecyclate ok");
+	ctx.log("circularity.funcCreateRecyclate ok");
 }
 
 pub struct InitContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableInitParams,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_init_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcInit");
+	ctx.log("circularity.funcInit");
 	let f = InitContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableInitParams { proxy: params_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	func_init(ctx, &f);
-	ctx.log("test3.funcInit ok");
+	ctx.log("circularity.funcInit ok");
 }
 
 pub struct PayoutFracContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutablePayoutFracParams,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_payout_frac_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcPayoutFrac");
+	ctx.log("circularity.funcPayoutFrac");
 	let f = PayoutFracContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutablePayoutFracParams { proxy: params_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
 	func_payout_frac(ctx, &f);
-	ctx.log("test3.funcPayoutFrac ok");
+	ctx.log("circularity.funcPayoutFrac ok");
 }
 
 pub struct SetMaterialsContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableSetMaterialsParams,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_set_materials_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcSetMaterials");
+	ctx.log("circularity.funcSetMaterials");
 	let f = SetMaterialsContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableSetMaterialsParams { proxy: params_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	func_set_materials(ctx, &f);
-	ctx.log("test3.funcSetMaterials ok");
+	ctx.log("circularity.funcSetMaterials ok");
 }
 
 pub struct SetOwnerContext {
-	events:  test3Events,
+	events:  circularityEvents,
 	params: ImmutableSetOwnerParams,
-	state: Mutabletest3State,
+	state: MutablecircularityState,
 }
 
 fn func_set_owner_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcSetOwner");
+	ctx.log("circularity.funcSetOwner");
 	let f = SetOwnerContext {
-		events:  test3Events {},
+		events:  circularityEvents {},
 		params: ImmutableSetOwnerParams { proxy: params_proxy() },
-		state: Mutabletest3State { proxy: state_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
 	};
 
 	// current owner of this smart contract
@@ -255,96 +255,96 @@ fn func_set_owner_thunk(ctx: &ScFuncContext) {
 
 	ctx.require(f.params.owner().exists(), "missing mandatory owner");
 	func_set_owner(ctx, &f);
-	ctx.log("test3.funcSetOwner ok");
+	ctx.log("circularity.funcSetOwner ok");
 }
 
 pub struct GetAmountOfRequiredFundsContext {
 	params: ImmutableGetAmountOfRequiredFundsParams,
 	results: MutableGetAmountOfRequiredFundsResults,
-	state: Immutabletest3State,
+	state: ImmutablecircularityState,
 }
 
 fn view_get_amount_of_required_funds_thunk(ctx: &ScViewContext) {
-	ctx.log("test3.viewGetAmountOfRequiredFunds");
+	ctx.log("circularity.viewGetAmountOfRequiredFunds");
 	let f = GetAmountOfRequiredFundsContext {
 		params: ImmutableGetAmountOfRequiredFundsParams { proxy: params_proxy() },
 		results: MutableGetAmountOfRequiredFundsResults { proxy: results_proxy() },
-		state: Immutabletest3State { proxy: state_proxy() },
+		state: ImmutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.charge_weight().exists(), "missing mandatory chargeWeight");
 	view_get_amount_of_required_funds(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.viewGetAmountOfRequiredFunds ok");
+	ctx.log("circularity.viewGetAmountOfRequiredFunds ok");
 }
 
 pub struct GetMaterialsContext {
 	params: ImmutableGetMaterialsParams,
 	results: MutableGetMaterialsResults,
-	state: Immutabletest3State,
+	state: ImmutablecircularityState,
 }
 
 fn view_get_materials_thunk(ctx: &ScViewContext) {
-	ctx.log("test3.viewGetMaterials");
+	ctx.log("circularity.viewGetMaterials");
 	let f = GetMaterialsContext {
 		params: ImmutableGetMaterialsParams { proxy: params_proxy() },
 		results: MutableGetMaterialsResults { proxy: results_proxy() },
-		state: Immutabletest3State { proxy: state_proxy() },
+		state: ImmutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	view_get_materials(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.viewGetMaterials ok");
+	ctx.log("circularity.viewGetMaterials ok");
 }
 
 pub struct GetOwnerContext {
 	results: MutableGetOwnerResults,
-	state: Immutabletest3State,
+	state: ImmutablecircularityState,
 }
 
 fn view_get_owner_thunk(ctx: &ScViewContext) {
-	ctx.log("test3.viewGetOwner");
+	ctx.log("circularity.viewGetOwner");
 	let f = GetOwnerContext {
 		results: MutableGetOwnerResults { proxy: results_proxy() },
-		state: Immutabletest3State { proxy: state_proxy() },
+		state: ImmutablecircularityState { proxy: state_proxy() },
 	};
 	view_get_owner(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.viewGetOwner ok");
+	ctx.log("circularity.viewGetOwner ok");
 }
 
 pub struct GetPPContext {
 	params: ImmutableGetPPParams,
 	results: MutableGetPPResults,
-	state: Immutabletest3State,
+	state: ImmutablecircularityState,
 }
 
 fn view_get_pp_thunk(ctx: &ScViewContext) {
-	ctx.log("test3.viewGetPP");
+	ctx.log("circularity.viewGetPP");
 	let f = GetPPContext {
 		params: ImmutableGetPPParams { proxy: params_proxy() },
 		results: MutableGetPPResults { proxy: results_proxy() },
-		state: Immutabletest3State { proxy: state_proxy() },
+		state: ImmutablecircularityState { proxy: state_proxy() },
 	};
 	ctx.require(f.params.id().exists(), "missing mandatory id");
 	view_get_pp(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.viewGetPP ok");
+	ctx.log("circularity.viewGetPP ok");
 }
 
 pub struct GetTokenPerPackageContext {
 	params: ImmutableGetTokenPerPackageParams,
 	results: MutableGetTokenPerPackageResults,
-	state: Immutabletest3State,
+	state: ImmutablecircularityState,
 }
 
 fn view_get_token_per_package_thunk(ctx: &ScViewContext) {
-	ctx.log("test3.viewGetTokenPerPackage");
+	ctx.log("circularity.viewGetTokenPerPackage");
 	let f = GetTokenPerPackageContext {
 		params: ImmutableGetTokenPerPackageParams { proxy: params_proxy() },
 		results: MutableGetTokenPerPackageResults { proxy: results_proxy() },
-		state: Immutabletest3State { proxy: state_proxy() },
+		state: ImmutablecircularityState { proxy: state_proxy() },
 	};
 	view_get_token_per_package(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
-	ctx.log("test3.viewGetTokenPerPackage ok");
+	ctx.log("circularity.viewGetTokenPerPackage ok");
 }
