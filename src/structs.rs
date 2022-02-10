@@ -356,6 +356,7 @@ pub struct Recyclate {
     pub dec_food    : bool, 
     pub dec_hygiene : bool, 
     pub did         : String, 
+    pub frac_id     : ScHash, 
     pub issuer      : ScAgentID, 
     pub name        : String, 
     pub recy_id     : ScHash, 
@@ -369,6 +370,7 @@ impl Recyclate {
             dec_food    : decode.bool(),
             dec_hygiene : decode.bool(),
             did         : decode.string(),
+            frac_id     : decode.hash(),
             issuer      : decode.agent_id(),
             name        : decode.string(),
             recy_id     : decode.hash(),
@@ -381,6 +383,7 @@ impl Recyclate {
 		encode.bool(self.dec_food);
 		encode.bool(self.dec_hygiene);
 		encode.string(&self.did);
+		encode.hash(&self.frac_id);
 		encode.agent_id(&self.issuer);
 		encode.string(&self.name);
 		encode.hash(&self.recy_id);

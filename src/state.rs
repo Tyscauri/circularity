@@ -48,6 +48,28 @@ impl MapHashToImmutableFraction {
     }
 }
 
+pub struct MapHashToImmutableFracPayoffKeys {
+	pub(crate) obj_id: i32,
+}
+
+impl MapHashToImmutableFracPayoffKeys {
+    pub fn get_frac_payoff_keys(&self, key: &ScHash) -> ImmutableFracPayoffKeys {
+        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_AGENT_ID);
+        ImmutableFracPayoffKeys { obj_id: sub_id }
+    }
+}
+
+pub struct MapHashToImmutableFracPayoffs {
+	pub(crate) obj_id: i32,
+}
+
+impl MapHashToImmutableFracPayoffs {
+    pub fn get_frac_payoffs(&self, key: &ScHash) -> ImmutableFracPayoffs {
+        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_MAP);
+        ImmutableFracPayoffs { obj_id: sub_id }
+    }
+}
+
 pub struct MapHashToImmutableProductPass {
 	pub(crate) obj_id: i32,
 }
@@ -100,8 +122,22 @@ impl Immutabletest3State {
 		MapHashToImmutableFraction { obj_id: map_id }
 	}
 
+    pub fn last_payout(&self) -> ScImmutableInt64 {
+		ScImmutableInt64::new(self.id, idx_map(IDX_STATE_LAST_PAYOUT))
+	}
+
     pub fn owner(&self) -> ScImmutableAgentID {
 		ScImmutableAgentID::new(self.id, idx_map(IDX_STATE_OWNER))
+	}
+
+    pub fn payoff_keys_frac(&self) -> MapHashToImmutableFracPayoffKeys {
+		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFF_KEYS_FRAC), TYPE_MAP);
+		MapHashToImmutableFracPayoffKeys { obj_id: map_id }
+	}
+
+    pub fn payoffs_frac(&self) -> MapHashToImmutableFracPayoffs {
+		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFFS_FRAC), TYPE_MAP);
+		MapHashToImmutableFracPayoffs { obj_id: map_id }
 	}
 
     pub fn price_per_mg(&self) -> ScImmutableUint64 {
@@ -172,6 +208,36 @@ impl MapHashToMutableFraction {
     }
 }
 
+pub struct MapHashToMutableFracPayoffKeys {
+	pub(crate) obj_id: i32,
+}
+
+impl MapHashToMutableFracPayoffKeys {
+    pub fn clear(&self) {
+        clear(self.obj_id);
+    }
+
+    pub fn get_frac_payoff_keys(&self, key: &ScHash) -> MutableFracPayoffKeys {
+        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_ARRAY | TYPE_AGENT_ID);
+        MutableFracPayoffKeys { obj_id: sub_id }
+    }
+}
+
+pub struct MapHashToMutableFracPayoffs {
+	pub(crate) obj_id: i32,
+}
+
+impl MapHashToMutableFracPayoffs {
+    pub fn clear(&self) {
+        clear(self.obj_id);
+    }
+
+    pub fn get_frac_payoffs(&self, key: &ScHash) -> MutableFracPayoffs {
+        let sub_id = get_object_id(self.obj_id, key.get_key_id(), TYPE_MAP);
+        MutableFracPayoffs { obj_id: sub_id }
+    }
+}
+
 pub struct MapHashToMutableProductPass {
 	pub(crate) obj_id: i32,
 }
@@ -236,8 +302,22 @@ impl Mutabletest3State {
 		MapHashToMutableFraction { obj_id: map_id }
 	}
 
+    pub fn last_payout(&self) -> ScMutableInt64 {
+		ScMutableInt64::new(self.id, idx_map(IDX_STATE_LAST_PAYOUT))
+	}
+
     pub fn owner(&self) -> ScMutableAgentID {
 		ScMutableAgentID::new(self.id, idx_map(IDX_STATE_OWNER))
+	}
+
+    pub fn payoff_keys_frac(&self) -> MapHashToMutableFracPayoffKeys {
+		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFF_KEYS_FRAC), TYPE_MAP);
+		MapHashToMutableFracPayoffKeys { obj_id: map_id }
+	}
+
+    pub fn payoffs_frac(&self) -> MapHashToMutableFracPayoffs {
+		let map_id = get_object_id(self.id, idx_map(IDX_STATE_PAYOFFS_FRAC), TYPE_MAP);
+		MapHashToMutableFracPayoffs { obj_id: map_id }
 	}
 
     pub fn price_per_mg(&self) -> ScMutableUint64 {

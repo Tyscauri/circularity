@@ -181,6 +181,28 @@ impl MutableInitParams {
 }
 
 #[derive(Clone, Copy)]
+pub struct ImmutablePayoutFracParams {
+    pub(crate) id: i32,
+}
+
+impl ImmutablePayoutFracParams {
+    pub fn frac_id(&self) -> ScImmutableHash {
+		ScImmutableHash::new(self.id, idx_map(IDX_PARAM_FRAC_ID))
+	}
+}
+
+#[derive(Clone, Copy)]
+pub struct MutablePayoutFracParams {
+    pub(crate) id: i32,
+}
+
+impl MutablePayoutFracParams {
+    pub fn frac_id(&self) -> ScMutableHash {
+		ScMutableHash::new(self.id, idx_map(IDX_PARAM_FRAC_ID))
+	}
+}
+
+#[derive(Clone, Copy)]
 pub struct ImmutableSetMaterialsParams {
     pub(crate) id: i32,
 }

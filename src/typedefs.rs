@@ -83,6 +83,70 @@ impl ArrayOfMutableFracComposition {
 
 pub type MutableFracCompositions = ArrayOfMutableFracComposition;
 
+pub struct ArrayOfImmutableAgentID {
+	pub(crate) obj_id: i32,
+}
+
+impl ArrayOfImmutableAgentID {
+    pub fn length(&self) -> i32 {
+        get_length(self.obj_id)
+    }
+
+    pub fn get_agent_id(&self, index: i32) -> ScImmutableAgentID {
+        ScImmutableAgentID::new(self.obj_id, Key32(index))
+    }
+}
+
+pub type ImmutableFracPayoffKeys = ArrayOfImmutableAgentID;
+
+pub struct ArrayOfMutableAgentID {
+	pub(crate) obj_id: i32,
+}
+
+impl ArrayOfMutableAgentID {
+    pub fn clear(&self) {
+        clear(self.obj_id);
+    }
+
+    pub fn length(&self) -> i32 {
+        get_length(self.obj_id)
+    }
+
+    pub fn get_agent_id(&self, index: i32) -> ScMutableAgentID {
+        ScMutableAgentID::new(self.obj_id, Key32(index))
+    }
+}
+
+pub type MutableFracPayoffKeys = ArrayOfMutableAgentID;
+
+pub struct MapAgentIDToImmutableUint64 {
+	pub(crate) obj_id: i32,
+}
+
+impl MapAgentIDToImmutableUint64 {
+    pub fn get_uint64(&self, key: &ScAgentID) -> ScImmutableUint64 {
+        ScImmutableUint64::new(self.obj_id, key.get_key_id())
+    }
+}
+
+pub type ImmutableFracPayoffs = MapAgentIDToImmutableUint64;
+
+pub struct MapAgentIDToMutableUint64 {
+	pub(crate) obj_id: i32,
+}
+
+impl MapAgentIDToMutableUint64 {
+    pub fn clear(&self) {
+        clear(self.obj_id);
+    }
+
+    pub fn get_uint64(&self, key: &ScAgentID) -> ScMutableUint64 {
+        ScMutableUint64::new(self.obj_id, key.get_key_id())
+    }
+}
+
+pub type MutableFracPayoffs = MapAgentIDToMutableUint64;
+
 pub struct ArrayOfImmutableRecyComposition {
 	pub(crate) obj_id: i32,
 }

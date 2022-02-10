@@ -37,14 +37,17 @@ pub(crate) const IDX_RESULT_TOKEN_REQUIRED    : usize = 20;
 pub(crate) const IDX_STATE_COMPOSITIONS      : usize = 21;
 pub(crate) const IDX_STATE_FRAC_COMPOSITIONS : usize = 22;
 pub(crate) const IDX_STATE_FRACTIONS         : usize = 23;
-pub(crate) const IDX_STATE_OWNER             : usize = 24;
-pub(crate) const IDX_STATE_PRICE_PER_MG      : usize = 25;
-pub(crate) const IDX_STATE_PRODUCTPASSES     : usize = 26;
-pub(crate) const IDX_STATE_RECY_COMPOSITIONS : usize = 27;
-pub(crate) const IDX_STATE_RECYCLATES        : usize = 28;
-pub(crate) const IDX_STATE_SHARE_RECYCLER    : usize = 29;
+pub(crate) const IDX_STATE_LAST_PAYOUT       : usize = 24;
+pub(crate) const IDX_STATE_OWNER             : usize = 25;
+pub(crate) const IDX_STATE_PAYOFF_KEYS_FRAC  : usize = 26;
+pub(crate) const IDX_STATE_PAYOFFS_FRAC      : usize = 27;
+pub(crate) const IDX_STATE_PRICE_PER_MG      : usize = 28;
+pub(crate) const IDX_STATE_PRODUCTPASSES     : usize = 29;
+pub(crate) const IDX_STATE_RECY_COMPOSITIONS : usize = 30;
+pub(crate) const IDX_STATE_RECYCLATES        : usize = 31;
+pub(crate) const IDX_STATE_SHARE_RECYCLER    : usize = 32;
 
-pub const KEY_MAP_LEN: usize = 30;
+pub const KEY_MAP_LEN: usize = 33;
 
 pub const KEY_MAP: [&str; KEY_MAP_LEN] = [
 	PARAM_CHARGE_WEIGHT,
@@ -71,7 +74,10 @@ pub const KEY_MAP: [&str; KEY_MAP_LEN] = [
 	STATE_COMPOSITIONS,
 	STATE_FRAC_COMPOSITIONS,
 	STATE_FRACTIONS,
+	STATE_LAST_PAYOUT,
 	STATE_OWNER,
+	STATE_PAYOFF_KEYS_FRAC,
+	STATE_PAYOFFS_FRAC,
 	STATE_PRICE_PER_MG,
 	STATE_PRODUCTPASSES,
 	STATE_RECY_COMPOSITIONS,

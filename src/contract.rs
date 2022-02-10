@@ -49,8 +49,9 @@ pub struct InitCall {
 	pub params: MutableInitParams,
 }
 
-pub struct PayoutCall {
+pub struct PayoutFracCall {
 	pub func: ScFunc,
+	pub params: MutablePayoutFracParams,
 }
 
 pub struct SetMaterialsCall {
@@ -154,10 +155,13 @@ impl ScFuncs {
         f
     }
 
-    pub fn payout(_ctx: & dyn ScFuncCallContext) -> PayoutCall {
-        PayoutCall {
-            func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT),
-        }
+    pub fn payout_frac(_ctx: & dyn ScFuncCallContext) -> PayoutFracCall {
+        let mut f = PayoutFracCall {
+            func: ScFunc::new(HSC_NAME, HFUNC_PAYOUT_FRAC),
+            params: MutablePayoutFracParams { id: 0 },
+        };
+        f.func.set_ptrs(&mut f.params.id, ptr::null_mut());
+        f
     }
 
     pub fn set_materials(_ctx: & dyn ScFuncCallContext) -> SetMaterialsCall {

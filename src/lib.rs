@@ -39,7 +39,7 @@ fn on_load() {
     exports.add_func(FUNC_CREATE_PP,                    func_create_pp_thunk);
     exports.add_func(FUNC_CREATE_RECYCLATE,             func_create_recyclate_thunk);
     exports.add_func(FUNC_INIT,                         func_init_thunk);
-    exports.add_func(FUNC_PAYOUT,                       func_payout_thunk);
+    exports.add_func(FUNC_PAYOUT_FRAC,                  func_payout_frac_thunk);
     exports.add_func(FUNC_SET_MATERIALS,                func_set_materials_thunk);
     exports.add_func(FUNC_SET_OWNER,                    func_set_owner_thunk);
     exports.add_view(VIEW_GET_AMOUNT_OF_REQUIRED_FUNDS, view_get_amount_of_required_funds_thunk);
@@ -204,21 +204,26 @@ fn func_init_thunk(ctx: &ScFuncContext) {
 	ctx.log("test3.funcInit ok");
 }
 
-pub struct PayoutContext {
+pub struct PayoutFracContext {
 	events:  test3Events,
+	params: ImmutablePayoutFracParams,
 	state: Mutabletest3State,
 }
 
-fn func_payout_thunk(ctx: &ScFuncContext) {
-	ctx.log("test3.funcPayout");
-	let f = PayoutContext {
+fn func_payout_frac_thunk(ctx: &ScFuncContext) {
+	ctx.log("test3.funcPayoutFrac");
+	let f = PayoutFracContext {
 		events:  test3Events {},
+		params: ImmutablePayoutFracParams {
+			id: OBJ_ID_PARAMS,
+		},
 		state: Mutabletest3State {
 			id: OBJ_ID_STATE,
 		},
 	};
-	func_payout(ctx, &f);
-	ctx.log("test3.funcPayout ok");
+	ctx.require(f.params.frac_id().exists(), "missing mandatory fracID");
+	func_payout_frac(ctx, &f);
+	ctx.log("test3.funcPayoutFrac ok");
 }
 
 pub struct SetMaterialsContext {

@@ -7,14 +7,17 @@ use crate::*;
 use crate::structs::*;
 use crate::typedefs::*;
 
+const NANO_TIME_DIVIDER: i64 = 1_000_000_000;
+
 pub fn func_init(ctx: &ScFuncContext, f: &InitContext) {
     if f.params.owner().exists() {
         f.state.owner().set_value(&f.params.owner().value());
         return;
     }
     f.state.owner().set_value(&ctx.contract_creator());
-    f.state.share_recycler().set_value(25);
+    f.state.share_recycler().set_value(75);
     f.state.price_per_mg().set_value(2); //assuming 1€ per MIOTA: 2 Iota per miligramm result in 2 cent per 10 gramms of weight
+    f.state.last_payout().set_value(ctx.timestamp() / NANO_TIME_DIVIDER);
 }
 
 pub fn func_set_owner(ctx: &ScFuncContext, f: &SetOwnerContext) {
@@ -64,8 +67,9 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
         ctx.panic(&format!("Charge does not provide sufficient token. '{tokens}'are required", tokens=requiredToken.to_string()));
         }
     
-    
+    //let share_recycler = f.state.share_recycler().value() as i64;
     f.state.productpasses().get_product_pass(&ppNew.id).set_value(&ppNew);
+    //f.state.payoffs().get_uint64(&ppNew.issuer).set_value((amount * share_recycler / 100) as u64); //noting the tokens the producer gets in case the packaging is recycled
     f.results.id().set_value(&ppNew.id);
     //f.events.ppcreated();
 }
@@ -219,6 +223,19 @@ pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) 
     
     f.state.fractions().get_fraction(&fracID).value().amount += &pp.amount;
     
+    let share_producer = (100 - f.state.share_recycler().value()) as u64;
+    let frac_payouts_to_producers = f.state.payoffs_frac().get_frac_payoffs(&fracID);
+    
+    let producerBalance = frac_payouts_to_producers.get_uint64(&pp.issuer);
+    if producerBalance.exists() {
+        producerBalance.set_value(producerBalance.value() + pp.amount as u64 * share_producer);
+    }
+    
+    else {
+        producerBalance.set_value(pp.amount as u64 * share_producer);
+        let keys = f.state.payoff_keys_frac().get_frac_payoff_keys(&fracID);
+        keys.get_agent_id(keys.length()).set_value(&pp.issuer);
+    }
     //remove pp (if not possible set amount to 0)
     //f.state.productpasses().get_product_pass(&ppID).delete();
     //f.state.compositions().get_compositions(&ppID).remove();
@@ -244,13 +261,14 @@ pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
         dec_food: decFood,
         dec_hygiene: decHygiene,
         issuer: issuer,
-        amount: amount
+        amount: amount,
+        frac_id: fracID
     };
     
     f.state.recyclates().get_recyclate(&newRecy.recy_id).set_value(&newRecy);
     
     let newRecyCompProxy = f.state.recy_compositions().get_recy_compositions(&newRecy.recy_id);
-    let fracComp: ArrayOfMutableFracComposition = f.state.frac_compositions().get_frac_compositions(&fracID);
+    let fracComp: ArrayOfMutableFracComposition = f.state.frac_compositions().get_frac_compositions(&newRecy.frac_id);
     
     for i in 0..fracComp.length() {
         
@@ -279,5 +297,53 @@ fn create_random_hash(ctx: &ScFuncContext) -> ScHash {
     return random_hash;
 }
 
+/*
 pub fn func_payout(ctx: &ScFuncContext, f: &PayoutContext) {
+    let keys: ArrayOfMutableAgentID = f.state.payoff_keys();
+    let payoffs_proxy: MapAgentIDToMutableUint64 = f.state.payoffs();
+    
+    for i in 0..keys.length() {
+        let address: ScAgentID = keys.get_agent_id(i).value();
+        let payoff: i64 = payoffs_proxy.get_uint64(&address).value() as i64;
+     
+        if payoff > 1000000 {
+        
+            let transfers: ScTransfers = ScTransfers::iotas(payoff);
+
+            ctx.transfer_to_address(&address.address(), transfers);
+            payoffs_proxy.get_uint64(&address).set_value(0);
+        }
+    }
 }
+*/
+
+pub fn func_payout_frac(ctx: &ScFuncContext, f: &PayoutFracContext) {
+    
+    let lastpayout = f.state.last_payout();
+    let currentTime: i64 = ctx.timestamp() / NANO_TIME_DIVIDER;                   // timestamp in nano secs
+    
+    if lastpayout.value() + 86400 < currentTime{                                  //can be called only once per day (every 86400 seconds)
+        let frac_id = f.params.frac_id().value();
+        let keys: ArrayOfMutableAgentID = f.state.payoff_keys_frac().get_frac_payoff_keys(&frac_id);
+        let payoffs_proxy: MapAgentIDToMutableUint64 = f.state.payoffs_frac().get_frac_payoffs(&frac_id);
+    
+        for i in 0..keys.length() {
+            let address: ScAgentID = keys.get_agent_id(i).value();
+            let payoff: i64 = payoffs_proxy.get_uint64(&address).value() as i64;
+     
+            if payoff > 0 {
+        
+                let transfers: ScTransfers = ScTransfers::iotas(payoff);
+
+                ctx.transfer_to_address(&address.address(), transfers);
+                payoffs_proxy.get_uint64(&address).set_value(0);
+            }
+        }
+    
+        keys.clear();
+        payoffs_proxy.clear();
+        lastpayout.set_value(currentTime);
+    }
+
+}
+

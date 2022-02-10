@@ -36,12 +36,15 @@ structs:
     decHygiene: Bool
     issuer: AgentID
     amount: Int64
+    fracId: Hash
   RecyComposition:
     material: String
-    weight: Uint64 //in mg
+    weight: Uint64 //in mg 
 typedefs:
   Compositions: Composition[]
   FracCompositions: FracComposition[]
+  FracPayoffKeys: AgentID[]
+  FracPayoffs: map[AgentID]Uint64
   RecyCompositions: RecyComposition[]
 state:
   owner: AgentID // current owner of this smart contract
@@ -53,6 +56,9 @@ state:
   fracCompositions: map[Hash]FracCompositions
   recyclates: map[Hash]Recyclate
   recyCompositions: map[Hash]RecyCompositions
+  payoffsFrac: map[Hash]FracPayoffs
+  payoffKeysFrac: map[Hash]FracPayoffKeys
+  lastPayout: Int64
 funcs:
   init:
     params:
@@ -94,7 +100,9 @@ funcs:
     results:
       fraction: Fraction
       recyclateID: Hash
-  payout:
+  payoutFrac:
+    params:
+      fracID: Hash
 views:
   getPP:
     params: 
