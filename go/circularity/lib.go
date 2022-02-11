@@ -16,6 +16,7 @@ var exportMap = wasmlib.ScExportMap{
     	FuncCreateFraction,
     	FuncCreatePP,
     	FuncCreateRecyclate,
+    	FuncDeletePP,
     	FuncInit,
     	FuncPayoutProducer,
     	FuncSetMaterials,
@@ -31,6 +32,7 @@ var exportMap = wasmlib.ScExportMap{
     	funcCreateFractionThunk,
     	funcCreatePPThunk,
     	funcCreateRecyclateThunk,
+    	funcDeletePPThunk,
     	funcInitThunk,
     	funcPayoutProducerThunk,
     	funcSetMaterialsThunk,
@@ -130,6 +132,7 @@ func funcCreatePPThunk(ctx wasmlib.ScFuncContext) {
 			proxy: wasmlib.NewStateProxy(),
 		},
 	}
+	ctx.Require(f.Params.ExpiryDate().Exists(), "missing mandatory expiryDate")
 	ctx.Require(f.Params.Name().Exists(), "missing mandatory name")
 	ctx.Require(f.Params.Purpose().Exists(), "missing mandatory purpose")
 	funcCreatePP(ctx, f)
@@ -162,6 +165,33 @@ func funcCreateRecyclateThunk(ctx wasmlib.ScFuncContext) {
 	funcCreateRecyclate(ctx, f)
 	ctx.Results(results)
 	ctx.Log("circularity.funcCreateRecyclate ok")
+}
+
+type DeletePPContext struct {
+	Events  circularityEvents
+	Params  ImmutableDeletePPParams
+	Results MutableDeletePPResults
+	State   MutablecircularityState
+}
+
+func funcDeletePPThunk(ctx wasmlib.ScFuncContext) {
+	ctx.Log("circularity.funcDeletePP")
+	results := wasmlib.NewScDict()
+	f := &DeletePPContext{
+		Params: ImmutableDeletePPParams{
+			proxy: wasmlib.NewParamsProxy(),
+		},
+		Results: MutableDeletePPResults{
+			proxy: results.AsProxy(),
+		},
+		State: MutablecircularityState{
+			proxy: wasmlib.NewStateProxy(),
+		},
+	}
+	ctx.Require(f.Params.PpID().Exists(), "missing mandatory ppID")
+	funcDeletePP(ctx, f)
+	ctx.Results(results)
+	ctx.Log("circularity.funcDeletePP ok")
 }
 
 type InitContext struct {

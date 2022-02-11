@@ -123,6 +123,10 @@ impl ImmutablecircularityState {
     pub fn share_recycler(&self) -> ScImmutableUint8 {
 		ScImmutableUint8::new(self.proxy.root(STATE_SHARE_RECYCLER))
 	}
+
+    pub fn token_to_donate(&self) -> ScImmutableUint64 {
+		ScImmutableUint64::new(self.proxy.root(STATE_TOKEN_TO_DONATE))
+	}
 }
 
 #[derive(Clone)]
@@ -263,5 +267,9 @@ impl MutablecircularityState {
 
     pub fn share_recycler(&self) -> ScMutableUint8 {
 		ScMutableUint8::new(self.proxy.root(STATE_SHARE_RECYCLER))
+	}
+
+    pub fn token_to_donate(&self) -> ScMutableUint64 {
+		ScMutableUint64::new(self.proxy.root(STATE_TOKEN_TO_DONATE))
 	}
 }

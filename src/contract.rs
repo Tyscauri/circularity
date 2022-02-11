@@ -34,6 +34,12 @@ pub struct CreateRecyclateCall {
 	pub results: ImmutableCreateRecyclateResults,
 }
 
+pub struct DeletePPCall {
+	pub func: ScFunc,
+	pub params: MutableDeletePPParams,
+	pub results: ImmutableDeletePPResults,
+}
+
 pub struct InitCall {
 	pub func: ScInitFunc,
 	pub params: MutableInitParams,
@@ -125,6 +131,17 @@ impl ScFuncs {
             func: ScFunc::new(HSC_NAME, HFUNC_CREATE_RECYCLATE),
             params: MutableCreateRecyclateParams { proxy: Proxy::nil() },
             results: ImmutableCreateRecyclateResults { proxy: Proxy::nil() },
+        };
+        ScFunc::link_params(&mut f.params.proxy, &f.func);
+        ScFunc::link_results(&mut f.results.proxy, &f.func);
+        f
+    }
+
+    pub fn delete_pp(_ctx: &dyn ScFuncCallContext) -> DeletePPCall {
+        let mut f = DeletePPCall {
+            func: ScFunc::new(HSC_NAME, HFUNC_DELETE_PP),
+            params: MutableDeletePPParams { proxy: Proxy::nil() },
+            results: ImmutableDeletePPResults { proxy: Proxy::nil() },
         };
         ScFunc::link_params(&mut f.params.proxy, &f.func);
         ScFunc::link_results(&mut f.results.proxy, &f.func);

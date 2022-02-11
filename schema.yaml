@@ -14,12 +14,14 @@ structs:
     packageWeight: Uint64
     totalPackages: Uint64
     packagesSorted: Uint64
+    packagesWrongSorted: Uint64
     packagesAlreadyPaid: Uint64
     amountPerCharge: Uint64
-    amountPerPackage: Uint64
-    tokenProducer: Uint64
-    tokenRecycler: Uint64
+    rewardPerPackageProducer: Uint64
+    rewardPerPackageRecycler: Uint64
     lastProducerPayout: Uint64
+    activationDate: Uint64
+    expiryDate: Uint64
   Composition:
     material: String
     proportion: Uint8
@@ -59,6 +61,7 @@ state:
   recyclates: map[Hash]Recyclate
   recyCompositions: map[Hash]RecyCompositions
   donationAddress: AgentID
+  tokenToDonate: Uint64
 funcs:
   init:
     params:
@@ -67,6 +70,7 @@ funcs:
     params: 
       name: String
       purpose: String
+      expiryDate: Uint64
     results:
       id: Hash
   setMaterials:
@@ -100,6 +104,11 @@ funcs:
   payoutProducer:
     params:
       fracID: Hash
+  deletePP:
+    params:
+      ppID: Hash
+    results:
+      pp: ProductPass
 views:
   getPP:
     params: 

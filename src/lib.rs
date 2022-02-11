@@ -36,6 +36,7 @@ const EXPORT_MAP: ScExportMap = ScExportMap {
     	FUNC_CREATE_FRACTION,
     	FUNC_CREATE_PP,
     	FUNC_CREATE_RECYCLATE,
+    	FUNC_DELETE_PP,
     	FUNC_INIT,
     	FUNC_PAYOUT_PRODUCER,
     	FUNC_SET_MATERIALS,
@@ -51,6 +52,7 @@ const EXPORT_MAP: ScExportMap = ScExportMap {
     	func_create_fraction_thunk,
     	func_create_pp_thunk,
     	func_create_recyclate_thunk,
+    	func_delete_pp_thunk,
     	func_init_thunk,
     	func_payout_producer_thunk,
     	func_set_materials_thunk,
@@ -133,6 +135,7 @@ fn func_create_pp_thunk(ctx: &ScFuncContext) {
 		results: MutableCreatePPResults { proxy: results_proxy() },
 		state: MutablecircularityState { proxy: state_proxy() },
 	};
+	ctx.require(f.params.expiry_date().exists(), "missing mandatory expiryDate");
 	ctx.require(f.params.name().exists(), "missing mandatory name");
 	ctx.require(f.params.purpose().exists(), "missing mandatory purpose");
 	func_create_pp(ctx, &f);
@@ -159,6 +162,27 @@ fn func_create_recyclate_thunk(ctx: &ScFuncContext) {
 	func_create_recyclate(ctx, &f);
 	ctx.results(&f.results.proxy.kv_store);
 	ctx.log("circularity.funcCreateRecyclate ok");
+}
+
+pub struct DeletePPContext {
+	events:  circularityEvents,
+	params: ImmutableDeletePPParams,
+	results: MutableDeletePPResults,
+	state: MutablecircularityState,
+}
+
+fn func_delete_pp_thunk(ctx: &ScFuncContext) {
+	ctx.log("circularity.funcDeletePP");
+	let f = DeletePPContext {
+		events:  circularityEvents {},
+		params: ImmutableDeletePPParams { proxy: params_proxy() },
+		results: MutableDeletePPResults { proxy: results_proxy() },
+		state: MutablecircularityState { proxy: state_proxy() },
+	};
+	ctx.require(f.params.pp_id().exists(), "missing mandatory ppID");
+	func_delete_pp(ctx, &f);
+	ctx.results(&f.results.proxy.kv_store);
+	ctx.log("circularity.funcDeletePP ok");
 }
 
 pub struct InitContext {

@@ -101,6 +101,10 @@ func (s ImmutablecircularityState) ShareRecycler() wasmtypes.ScImmutableUint8 {
 	return wasmtypes.NewScImmutableUint8(s.proxy.Root(StateShareRecycler))
 }
 
+func (s ImmutablecircularityState) TokenToDonate() wasmtypes.ScImmutableUint64 {
+	return wasmtypes.NewScImmutableUint64(s.proxy.Root(StateTokenToDonate))
+}
+
 type MapHashToMutableCompositions struct {
 	proxy wasmtypes.Proxy
 }
@@ -219,4 +223,8 @@ func (s MutablecircularityState) Recyclates() MapHashToMutableRecyclate {
 
 func (s MutablecircularityState) ShareRecycler() wasmtypes.ScMutableUint8 {
 	return wasmtypes.NewScMutableUint8(s.proxy.Root(StateShareRecycler))
+}
+
+func (s MutablecircularityState) TokenToDonate() wasmtypes.ScMutableUint64 {
+	return wasmtypes.NewScMutableUint64(s.proxy.Root(StateTokenToDonate))
 }

@@ -18,6 +18,7 @@ const (
 const (
 	ParamChargeWeight = "chargeWeight"
 	ParamComp         = "comp"
+	ParamExpiryDate   = "expiryDate"
 	ParamFracID       = "fracID"
 	ParamId           = "id"
 	ParamName         = "name"
@@ -52,6 +53,7 @@ const (
 	StateRecyCompositions = "recyCompositions"
 	StateRecyclates       = "recyclates"
 	StateShareRecycler    = "shareRecycler"
+	StateTokenToDonate    = "tokenToDonate"
 )
 
 const (
@@ -59,6 +61,7 @@ const (
 	FuncCreateFraction           = "createFraction"
 	FuncCreatePP                 = "createPP"
 	FuncCreateRecyclate          = "createRecyclate"
+	FuncDeletePP                 = "deletePP"
 	FuncInit                     = "init"
 	FuncPayoutProducer           = "payoutProducer"
 	FuncSetMaterials             = "setMaterials"
@@ -75,6 +78,7 @@ const (
 	HFuncCreateFraction           = wasmtypes.ScHname(0x59842fc3)
 	HFuncCreatePP                 = wasmtypes.ScHname(0x673fc3d7)
 	HFuncCreateRecyclate          = wasmtypes.ScHname(0x5066d840)
+	HFuncDeletePP                 = wasmtypes.ScHname(0x56dedc36)
 	HFuncInit                     = wasmtypes.ScHname(0x1f44d644)
 	HFuncPayoutProducer           = wasmtypes.ScHname(0x3a56494b)
 	HFuncSetMaterials             = wasmtypes.ScHname(0x7f0ebcae)

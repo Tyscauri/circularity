@@ -116,6 +116,28 @@ impl MutableCreateRecyclateResults {
 }
 
 #[derive(Clone)]
+pub struct ImmutableDeletePPResults {
+	pub(crate) proxy: Proxy,
+}
+
+impl ImmutableDeletePPResults {
+    pub fn pp(&self) -> ImmutableProductPass {
+		ImmutableProductPass { proxy: self.proxy.root(RESULT_PP) }
+	}
+}
+
+#[derive(Clone)]
+pub struct MutableDeletePPResults {
+	pub(crate) proxy: Proxy,
+}
+
+impl MutableDeletePPResults {
+    pub fn pp(&self) -> MutableProductPass {
+		MutableProductPass { proxy: self.proxy.root(RESULT_PP) }
+	}
+}
+
+#[derive(Clone)]
 pub struct ImmutableGetAmountOfRequiredFundsResults {
 	pub(crate) proxy: Proxy,
 }

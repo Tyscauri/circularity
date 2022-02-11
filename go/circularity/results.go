@@ -89,6 +89,22 @@ func (s MutableCreateRecyclateResults) RecyclateID() wasmtypes.ScMutableHash {
 	return wasmtypes.NewScMutableHash(s.proxy.Root(ResultRecyclateID))
 }
 
+type ImmutableDeletePPResults struct {
+	proxy wasmtypes.Proxy
+}
+
+func (s ImmutableDeletePPResults) Pp() ImmutableProductPass {
+	return ImmutableProductPass{proxy: s.proxy.Root(ResultPp)}
+}
+
+type MutableDeletePPResults struct {
+	proxy wasmtypes.Proxy
+}
+
+func (s MutableDeletePPResults) Pp() MutableProductPass {
+	return MutableProductPass{proxy: s.proxy.Root(ResultPp)}
+}
+
 type ImmutableGetAmountOfRequiredFundsResults struct {
 	proxy wasmtypes.Proxy
 }

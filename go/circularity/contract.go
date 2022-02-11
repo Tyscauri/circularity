@@ -33,6 +33,12 @@ type CreateRecyclateCall struct {
 	Results ImmutableCreateRecyclateResults
 }
 
+type DeletePPCall struct {
+	Func    *wasmlib.ScFunc
+	Params  MutableDeletePPParams
+	Results ImmutableDeletePPResults
+}
+
 type InitCall struct {
 	Func    *wasmlib.ScInitFunc
 	Params  MutableInitParams
@@ -109,6 +115,13 @@ func (sc Funcs) CreatePP(ctx wasmlib.ScFuncCallContext) *CreatePPCall {
 
 func (sc Funcs) CreateRecyclate(ctx wasmlib.ScFuncCallContext) *CreateRecyclateCall {
 	f := &CreateRecyclateCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncCreateRecyclate)}
+	f.Params.proxy = wasmlib.NewCallParamsProxy(&f.Func.ScView)
+	wasmlib.NewCallResultsProxy(&f.Func.ScView, &f.Results.proxy)
+	return f
+}
+
+func (sc Funcs) DeletePP(ctx wasmlib.ScFuncCallContext) *DeletePPCall {
+	f := &DeletePPCall{Func: wasmlib.NewScFunc(ctx, HScName, HFuncDeletePP)}
 	f.Params.proxy = wasmlib.NewCallParamsProxy(&f.Func.ScView)
 	wasmlib.NewCallResultsProxy(&f.Func.ScView, &f.Results.proxy)
 	return f

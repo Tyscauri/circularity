@@ -77,6 +77,10 @@ pub struct ImmutableCreatePPParams {
 }
 
 impl ImmutableCreatePPParams {
+    pub fn expiry_date(&self) -> ScImmutableUint64 {
+		ScImmutableUint64::new(self.proxy.root(PARAM_EXPIRY_DATE))
+	}
+
     pub fn name(&self) -> ScImmutableString {
 		ScImmutableString::new(self.proxy.root(PARAM_NAME))
 	}
@@ -92,6 +96,10 @@ pub struct MutableCreatePPParams {
 }
 
 impl MutableCreatePPParams {
+    pub fn expiry_date(&self) -> ScMutableUint64 {
+		ScMutableUint64::new(self.proxy.root(PARAM_EXPIRY_DATE))
+	}
+
     pub fn name(&self) -> ScMutableString {
 		ScMutableString::new(self.proxy.root(PARAM_NAME))
 	}
@@ -128,6 +136,28 @@ impl MutableCreateRecyclateParams {
 
     pub fn name(&self) -> ScMutableString {
 		ScMutableString::new(self.proxy.root(PARAM_NAME))
+	}
+}
+
+#[derive(Clone)]
+pub struct ImmutableDeletePPParams {
+	pub(crate) proxy: Proxy,
+}
+
+impl ImmutableDeletePPParams {
+    pub fn pp_id(&self) -> ScImmutableHash {
+		ScImmutableHash::new(self.proxy.root(PARAM_PP_ID))
+	}
+}
+
+#[derive(Clone)]
+pub struct MutableDeletePPParams {
+	pub(crate) proxy: Proxy,
+}
+
+impl MutableDeletePPParams {
+    pub fn pp_id(&self) -> ScMutableHash {
+		ScMutableHash::new(self.proxy.root(PARAM_PP_ID))
 	}
 }
 

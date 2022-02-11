@@ -61,6 +61,10 @@ type ImmutableCreatePPParams struct {
 	proxy wasmtypes.Proxy
 }
 
+func (s ImmutableCreatePPParams) ExpiryDate() wasmtypes.ScImmutableUint64 {
+	return wasmtypes.NewScImmutableUint64(s.proxy.Root(ParamExpiryDate))
+}
+
 func (s ImmutableCreatePPParams) Name() wasmtypes.ScImmutableString {
 	return wasmtypes.NewScImmutableString(s.proxy.Root(ParamName))
 }
@@ -71,6 +75,10 @@ func (s ImmutableCreatePPParams) Purpose() wasmtypes.ScImmutableString {
 
 type MutableCreatePPParams struct {
 	proxy wasmtypes.Proxy
+}
+
+func (s MutableCreatePPParams) ExpiryDate() wasmtypes.ScMutableUint64 {
+	return wasmtypes.NewScMutableUint64(s.proxy.Root(ParamExpiryDate))
 }
 
 func (s MutableCreatePPParams) Name() wasmtypes.ScMutableString {
@@ -103,6 +111,22 @@ func (s MutableCreateRecyclateParams) FracID() wasmtypes.ScMutableHash {
 
 func (s MutableCreateRecyclateParams) Name() wasmtypes.ScMutableString {
 	return wasmtypes.NewScMutableString(s.proxy.Root(ParamName))
+}
+
+type ImmutableDeletePPParams struct {
+	proxy wasmtypes.Proxy
+}
+
+func (s ImmutableDeletePPParams) PpID() wasmtypes.ScImmutableHash {
+	return wasmtypes.NewScImmutableHash(s.proxy.Root(ParamPpID))
+}
+
+type MutableDeletePPParams struct {
+	proxy wasmtypes.Proxy
+}
+
+func (s MutableDeletePPParams) PpID() wasmtypes.ScMutableHash {
+	return wasmtypes.NewScMutableHash(s.proxy.Root(ParamPpID))
 }
 
 type ImmutableInitParams struct {

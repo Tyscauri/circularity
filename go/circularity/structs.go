@@ -181,53 +181,58 @@ func (o MutableFraction) Value() *Fraction {
 }
 
 type ProductPass struct {
-	AmountPerCharge     uint64 
-	AmountPerPackage    uint64 
-	ChargeWeight        uint64 
-	Did                 string  //merged did:iota:id
-	Id                  wasmtypes.ScHash 
-	Issuer              wasmtypes.ScAgentID  //packaging producer
-	LastProducerPayout  uint64 
-	Name                string 
-	PackageWeight       uint64 
-	PackagesAlreadyPaid uint64 
-	PackagesSorted      uint64 
-	Purpose             string  //e.g. food, hygiene, others
-	TokenProducer       uint64 
-	TokenRecycler       uint64 
-	TotalPackages       uint64 
-	Version             uint8 
+	ActivationDate           uint64 
+	AmountPerCharge          uint64 
+	ChargeWeight             uint64 
+	Did                      string  //merged did:iota:id
+	ExpiryDate               uint64 
+	Id                       wasmtypes.ScHash 
+	Issuer                   wasmtypes.ScAgentID  //packaging producer
+	LastProducerPayout       uint64 
+	Name                     string 
+	PackageWeight            uint64 
+	PackagesAlreadyPaid      uint64 
+	PackagesSorted           uint64 
+	PackagesWrongSorted      uint64 
+	Purpose                  string  //e.g. food, hygiene, others
+	RewardPerPackageProducer uint64 
+	RewardPerPackageRecycler uint64 
+	TotalPackages            uint64 
+	Version                  uint8 
 }
 
 func NewProductPassFromBytes(buf []byte) *ProductPass {
 	dec := wasmtypes.NewWasmDecoder(buf)
 	data := &ProductPass{}
-	data.AmountPerCharge     = wasmtypes.Uint64Decode(dec)
-	data.AmountPerPackage    = wasmtypes.Uint64Decode(dec)
-	data.ChargeWeight        = wasmtypes.Uint64Decode(dec)
-	data.Did                 = wasmtypes.StringDecode(dec)
-	data.Id                  = wasmtypes.HashDecode(dec)
-	data.Issuer              = wasmtypes.AgentIDDecode(dec)
-	data.LastProducerPayout  = wasmtypes.Uint64Decode(dec)
-	data.Name                = wasmtypes.StringDecode(dec)
-	data.PackageWeight       = wasmtypes.Uint64Decode(dec)
-	data.PackagesAlreadyPaid = wasmtypes.Uint64Decode(dec)
-	data.PackagesSorted      = wasmtypes.Uint64Decode(dec)
-	data.Purpose             = wasmtypes.StringDecode(dec)
-	data.TokenProducer       = wasmtypes.Uint64Decode(dec)
-	data.TokenRecycler       = wasmtypes.Uint64Decode(dec)
-	data.TotalPackages       = wasmtypes.Uint64Decode(dec)
-	data.Version             = wasmtypes.Uint8Decode(dec)
+	data.ActivationDate           = wasmtypes.Uint64Decode(dec)
+	data.AmountPerCharge          = wasmtypes.Uint64Decode(dec)
+	data.ChargeWeight             = wasmtypes.Uint64Decode(dec)
+	data.Did                      = wasmtypes.StringDecode(dec)
+	data.ExpiryDate               = wasmtypes.Uint64Decode(dec)
+	data.Id                       = wasmtypes.HashDecode(dec)
+	data.Issuer                   = wasmtypes.AgentIDDecode(dec)
+	data.LastProducerPayout       = wasmtypes.Uint64Decode(dec)
+	data.Name                     = wasmtypes.StringDecode(dec)
+	data.PackageWeight            = wasmtypes.Uint64Decode(dec)
+	data.PackagesAlreadyPaid      = wasmtypes.Uint64Decode(dec)
+	data.PackagesSorted           = wasmtypes.Uint64Decode(dec)
+	data.PackagesWrongSorted      = wasmtypes.Uint64Decode(dec)
+	data.Purpose                  = wasmtypes.StringDecode(dec)
+	data.RewardPerPackageProducer = wasmtypes.Uint64Decode(dec)
+	data.RewardPerPackageRecycler = wasmtypes.Uint64Decode(dec)
+	data.TotalPackages            = wasmtypes.Uint64Decode(dec)
+	data.Version                  = wasmtypes.Uint8Decode(dec)
 	dec.Close()
 	return data
 }
 
 func (o *ProductPass) Bytes() []byte {
 	enc := wasmtypes.NewWasmEncoder()
+		wasmtypes.Uint64Encode(enc, o.ActivationDate)
 		wasmtypes.Uint64Encode(enc, o.AmountPerCharge)
-		wasmtypes.Uint64Encode(enc, o.AmountPerPackage)
 		wasmtypes.Uint64Encode(enc, o.ChargeWeight)
 		wasmtypes.StringEncode(enc, o.Did)
+		wasmtypes.Uint64Encode(enc, o.ExpiryDate)
 		wasmtypes.HashEncode(enc, o.Id)
 		wasmtypes.AgentIDEncode(enc, o.Issuer)
 		wasmtypes.Uint64Encode(enc, o.LastProducerPayout)
@@ -235,9 +240,10 @@ func (o *ProductPass) Bytes() []byte {
 		wasmtypes.Uint64Encode(enc, o.PackageWeight)
 		wasmtypes.Uint64Encode(enc, o.PackagesAlreadyPaid)
 		wasmtypes.Uint64Encode(enc, o.PackagesSorted)
+		wasmtypes.Uint64Encode(enc, o.PackagesWrongSorted)
 		wasmtypes.StringEncode(enc, o.Purpose)
-		wasmtypes.Uint64Encode(enc, o.TokenProducer)
-		wasmtypes.Uint64Encode(enc, o.TokenRecycler)
+		wasmtypes.Uint64Encode(enc, o.RewardPerPackageProducer)
+		wasmtypes.Uint64Encode(enc, o.RewardPerPackageRecycler)
 		wasmtypes.Uint64Encode(enc, o.TotalPackages)
 		wasmtypes.Uint8Encode(enc, o.Version)
 	return enc.Buf()

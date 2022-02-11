@@ -46,12 +46,14 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
     let totalPackages: u64 = chargeWeight / packageWeight;
     let amountPerCharge: u64 = ctx.incoming().balance(&ScColor::IOTA);
     let amountPerPackage: u64 = amountPerCharge * packageWeight / chargeWeight;
-    let tokenProducer: u64 = amountPerCharge * ((100 - f.state.share_recycler().value()) / 100) as u64;
-    let tokenRecycler: u64 = amountPerCharge * f.state.share_recycler().value() as u64 / 100;
+    let rewardPerPackageProducer: u64 = amountPerCharge / totalPackages * ((100 - f.state.share_recycler().value()) / 100) as u64;
+    let rewardPaerPackageRecycler: u64 = amountPerCharge / totalPackages * f.state.share_recycler().value() as u64 / 100;
     let packagesSorted: u64 = 0;
+    let packagesWrongSorted: u64 = 0;
     let packagesAlreadyPaid = 0;
-    let lastPayout = ctx.timestamp() / NANO_TIME_DIVIDER;
-
+    let activationDate: u64 = ctx.timestamp() / NANO_TIME_DIVIDER;
+    let expiryDate: u64 = f.params.expiry_date().value() / NANO_TIME_DIVIDER;
+    let lastPayout = activationDate;
 
     let ppNew = ProductPass{
         id: id,
@@ -64,11 +66,13 @@ pub fn func_create_pp(ctx: &ScFuncContext, f: &CreatePPContext) {
         package_weight: packageWeight, //in miligramm
         total_packages: totalPackages,
         packages_sorted: packagesSorted,
+        packages_wrong_sorted: packagesWrongSorted,
         packages_already_paid: packagesAlreadyPaid,
         amount_per_charge: amountPerCharge,
-        amount_per_package: amountPerPackage,
-        token_producer: tokenProducer,
-        token_recycler: tokenRecycler,
+        reward_per_package_producer: rewardPerPackageProducer,
+        reward_per_package_recycler: rewardPaerPackageRecycler,
+        activation_date: activationDate,
+        expiry_date: expiryDate,
         last_producer_payout: lastPayout
 
     };
@@ -183,7 +187,7 @@ pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) 
     let pp: ProductPass = pp_proxy.value();
     let ppComp = f.state.compositions().get_compositions(&ppID);
     let fracComp = f.state.frac_compositions().get_frac_compositions(&fracID);
-    let frac = f.state.fractions().get_fraction(&fracID);
+    let frac_proxy = f.state.fractions().get_fraction(&fracID);
     
 
     for i in 0..ppComp.length() {
@@ -219,20 +223,20 @@ pub fn func_add_pp_to_fraction(ctx: &ScFuncContext, f: &AddPPToFractionContext) 
     }
     
     //organize money distribution
-    //note that a package has been sorted to a fraction with the same purpose, that is basis for releasing funds for the packaging producer
-    if pp.purpose == frac.value().purpose {
+    //note that tracking packages which have been sorted to a fraction with the same purpose is basis for releasing funds
+    if pp.purpose == frac_proxy.value().purpose {
         pp_proxy.value().packages_sorted = &pp.packages_sorted +1;
-    }
-    else {          //currently sets the fraction unsuitable for food applications if one packaging added is not suitable for food
-        frac.value().purpose = "false".to_string();
+        frac_proxy.value().amount += &pp.reward_per_package_recycler;
     }
 
-    f.state.fractions().get_fraction(&fracID).value().amount += &pp.amount_per_package * f.state.share_recycler().value() as u64 / 100;
-    
-
-    //remove pp
-    f.state.productpasses().get_product_pass(&ppID).delete();
-    f.state.compositions().get_compositions(&ppID).clear();      //probably not functional right now
+    else {          //currently sets the whole fraction unsuitable for the original application if one packaging added is not suitable for it
+        if frac_proxy.value().purpose != "false" {
+            frac_proxy.value().purpose = "false".to_string();
+        }
+        let donation_proxy = f.state.token_to_donate();
+        donation_proxy.set_value(donation_proxy.value() + &pp.reward_per_package_producer + &pp.reward_per_package_recycler);
+        pp_proxy.value().packages_wrong_sorted += 1;
+    }    
 }
 
 pub fn func_create_recyclate(ctx: &ScFuncContext, f: &CreateRecyclateContext) {
@@ -381,8 +385,9 @@ pub fn func_payout_producer(ctx: &ScFuncContext, f: &PayoutProducerContext) {
 
     //can be called only once per day (every 86400 seconds)
     if lastpayout + 86400 < currentTime && pp_value.packages_sorted > pp_value.packages_already_paid {
+
         let address: ScAgentID = pp_value.issuer;
-        let payout = pp_value.token_producer * (&pp_value.packages_sorted - &pp_value.packages_already_paid);
+        let payout = pp_value.reward_per_package_producer * (&pp_value.packages_sorted - &pp_value.packages_already_paid);
     
         pp_proxy.value().packages_already_paid = pp_value.packages_sorted;
     
@@ -391,7 +396,41 @@ pub fn func_payout_producer(ctx: &ScFuncContext, f: &PayoutProducerContext) {
         pp_proxy.value().last_producer_payout = currentTime;
     }
     else {
-        ctx.panic("Functions can only be called once every 24 hours.");
+        ctx.panic("Function can only be called once every 24 hours.");
     }
+
+}
+
+pub fn func_delete_pp(ctx: &ScFuncContext, f: &DeletePPContext) {
+    let ppID = f.params.pp_id().value();
+    let pp_proxy: MutableProductPass = f.state.productpasses().get_product_pass(&ppID);
+    let pp_value = pp_proxy.value();
+    let total_number_packages = pp_value.charge_weight / pp_value.package_weight;
+
+    //payout remaing packages
+    if pp_value.expiry_date > ctx.timestamp() / NANO_TIME_DIVIDER || total_number_packages == pp_value.packages_sorted + pp_value.packages_wrong_sorted {
+        if pp_value.packages_sorted > pp_value.packages_already_paid {
+            let address: ScAgentID = pp_value.issuer;
+            let payout = pp_value.reward_per_package_producer * (&pp_value.packages_sorted - &pp_value.packages_already_paid);
+        
+            pp_proxy.value().packages_already_paid = pp_value.packages_sorted;
+        
+            let transfers: ScTransfers = ScTransfers::iotas(payout);
+            ctx.transfer_to_address(&address.address(), transfers);
+        }
+
+    }
+
+    let updated_pp_value = pp_proxy.value();
+
+    let leftover_token = updated_pp_value.amount_per_charge - 
+        (updated_pp_value.packages_sorted + updated_pp_value.packages_wrong_sorted) * (updated_pp_value.reward_per_package_producer + updated_pp_value.reward_per_package_recycler);
+
+    let token_to_donate_proxy = f.state.token_to_donate();
+    token_to_donate_proxy.set_value(token_to_donate_proxy.value() + leftover_token);
+    
+    //remove pp
+    f.state.productpasses().get_product_pass(&ppID).delete();
+    f.state.compositions().get_compositions(&ppID).clear();      //probably not functional right now
 
 }

@@ -59,3 +59,6 @@ func funcTickerPPToSameFraction(ctx wasmlib.ScFuncContext, f *TickerPPToSameFrac
 
 func funcPayoutProducer(ctx wasmlib.ScFuncContext, f *PayoutProducerContext) {
 }
+
+func funcDeletePP(ctx wasmlib.ScFuncContext, f *DeletePPContext) {
+}

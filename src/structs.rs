@@ -207,53 +207,58 @@ impl MutableFraction {
 
 #[derive(Clone)]
 pub struct ProductPass {
-    pub amount_per_charge     : u64, 
-    pub amount_per_package    : u64, 
-    pub charge_weight         : u64, 
-    pub did                   : String,  //merged did:iota:id
-    pub id                    : ScHash, 
-    pub issuer                : ScAgentID,  //packaging producer
-    pub last_producer_payout  : u64, 
-    pub name                  : String, 
-    pub package_weight        : u64, 
-    pub packages_already_paid : u64, 
-    pub packages_sorted       : u64, 
-    pub purpose               : String,  //e.g. food, hygiene, others
-    pub token_producer        : u64, 
-    pub token_recycler        : u64, 
-    pub total_packages        : u64, 
-    pub version               : u8, 
+    pub activation_date             : u64, 
+    pub amount_per_charge           : u64, 
+    pub charge_weight               : u64, 
+    pub did                         : String,  //merged did:iota:id
+    pub expiry_date                 : u64, 
+    pub id                          : ScHash, 
+    pub issuer                      : ScAgentID,  //packaging producer
+    pub last_producer_payout        : u64, 
+    pub name                        : String, 
+    pub package_weight              : u64, 
+    pub packages_already_paid       : u64, 
+    pub packages_sorted             : u64, 
+    pub packages_wrong_sorted       : u64, 
+    pub purpose                     : String,  //e.g. food, hygiene, others
+    pub reward_per_package_producer : u64, 
+    pub reward_per_package_recycler : u64, 
+    pub total_packages              : u64, 
+    pub version                     : u8, 
 }
 
 impl ProductPass {
     pub fn from_bytes(bytes: &[u8]) -> ProductPass {
         let mut dec = WasmDecoder::new(bytes);
         ProductPass {
-            amount_per_charge     : uint64_decode(&mut dec),
-            amount_per_package    : uint64_decode(&mut dec),
-            charge_weight         : uint64_decode(&mut dec),
-            did                   : string_decode(&mut dec),
-            id                    : hash_decode(&mut dec),
-            issuer                : agent_id_decode(&mut dec),
-            last_producer_payout  : uint64_decode(&mut dec),
-            name                  : string_decode(&mut dec),
-            package_weight        : uint64_decode(&mut dec),
-            packages_already_paid : uint64_decode(&mut dec),
-            packages_sorted       : uint64_decode(&mut dec),
-            purpose               : string_decode(&mut dec),
-            token_producer        : uint64_decode(&mut dec),
-            token_recycler        : uint64_decode(&mut dec),
-            total_packages        : uint64_decode(&mut dec),
-            version               : uint8_decode(&mut dec),
+            activation_date             : uint64_decode(&mut dec),
+            amount_per_charge           : uint64_decode(&mut dec),
+            charge_weight               : uint64_decode(&mut dec),
+            did                         : string_decode(&mut dec),
+            expiry_date                 : uint64_decode(&mut dec),
+            id                          : hash_decode(&mut dec),
+            issuer                      : agent_id_decode(&mut dec),
+            last_producer_payout        : uint64_decode(&mut dec),
+            name                        : string_decode(&mut dec),
+            package_weight              : uint64_decode(&mut dec),
+            packages_already_paid       : uint64_decode(&mut dec),
+            packages_sorted             : uint64_decode(&mut dec),
+            packages_wrong_sorted       : uint64_decode(&mut dec),
+            purpose                     : string_decode(&mut dec),
+            reward_per_package_producer : uint64_decode(&mut dec),
+            reward_per_package_recycler : uint64_decode(&mut dec),
+            total_packages              : uint64_decode(&mut dec),
+            version                     : uint8_decode(&mut dec),
         }
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {
         let mut enc = WasmEncoder::new();
+		uint64_encode(&mut enc, self.activation_date);
 		uint64_encode(&mut enc, self.amount_per_charge);
-		uint64_encode(&mut enc, self.amount_per_package);
 		uint64_encode(&mut enc, self.charge_weight);
 		string_encode(&mut enc, &self.did);
+		uint64_encode(&mut enc, self.expiry_date);
 		hash_encode(&mut enc, &self.id);
 		agent_id_encode(&mut enc, &self.issuer);
 		uint64_encode(&mut enc, self.last_producer_payout);
@@ -261,9 +266,10 @@ impl ProductPass {
 		uint64_encode(&mut enc, self.package_weight);
 		uint64_encode(&mut enc, self.packages_already_paid);
 		uint64_encode(&mut enc, self.packages_sorted);
+		uint64_encode(&mut enc, self.packages_wrong_sorted);
 		string_encode(&mut enc, &self.purpose);
-		uint64_encode(&mut enc, self.token_producer);
-		uint64_encode(&mut enc, self.token_recycler);
+		uint64_encode(&mut enc, self.reward_per_package_producer);
+		uint64_encode(&mut enc, self.reward_per_package_recycler);
 		uint64_encode(&mut enc, self.total_packages);
 		uint8_encode(&mut enc, self.version);
         enc.buf()
